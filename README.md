@@ -79,7 +79,7 @@ Every day = **1 Live Project**. After the live session, all project files are pu
 2. **Watch** for daily pushes after each live session
 3. **Clone** the repo to follow along locally:
    ```bash
-   git clone https://github.com/10x-in/28-Day-Challenges.git
+   git clone https://github.com/10xDotIn/28-Day-Challenges.git
    ```
 4. Navigate to the day's folder to access datasets, code, and project files
 5. Try building the project yourself before watching the live session
@@ -121,7 +121,7 @@ By the end of 28 days, you won't just have 28 projects in your portfolio — you
 
 ## Stay Connected
 
-This challenge is brought to you by [**10xDotIn**](https://github.com/10x-in) — building the future of agentic workflows, one project at a time.
+This challenge is brought to you by [**10xDotIn**](https://github.com/10xDotIn) — building the future of agentic workflows, one project at a time.
 
 ---
 
