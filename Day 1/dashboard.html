@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Adidas US Sales Dashboard | Day 1 Analysis</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+  :root {
+    --bg: #0f1117;
+    --card: #1a1d2e;
+    --card-hover: #222640;
+    --accent: #00d4aa;
+    --accent2: #7c5cfc;
+    --accent3: #ff6b6b;
+    --accent4: #ffd93d;
+    --accent5: #4ecdc4;
+    --text: #e4e6f0;
+    --text-muted: #8b8fa3;
+    --border: #2a2e42;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  .header {
+    background: linear-gradient(135deg, #1a1d2e 0%, #2a1a3e 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 24px 40px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+
+  .header img { height: 48px; filter: brightness(0) invert(1); }
+
+  .header h1 {
+    font-size: 24px;
+    font-weight: 700;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .header .subtitle { color: var(--text-muted); font-size: 14px; margin-top: 2px; }
+
+  .kpi-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+    padding: 28px 40px 0;
+  }
+
+  .kpi {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 22px 26px;
+    transition: transform 0.2s, border-color 0.2s;
+  }
+
+  .kpi:hover { transform: translateY(-2px); border-color: var(--accent); }
+
+  .kpi .label { font-size: 13px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; }
+
+  .kpi .value {
+    font-size: 32px;
+    font-weight: 700;
+    margin-top: 6px;
+    background: linear-gradient(90deg, #fff, #c0c4d8);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .kpi .change { font-size: 13px; margin-top: 6px; }
+  .kpi .change.up { color: var(--accent); }
+  .kpi .change.down { color: var(--accent3); }
+
+  .dashboard {
+    padding: 28px 40px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  .row { display: grid; gap: 24px; }
+  .row-2 { grid-template-columns: 1fr 1fr; }
+  .row-3 { grid-template-columns: 1fr 1fr 1fr; }
+
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 24px;
+    transition: border-color 0.2s;
+  }
+
+  .card:hover { border-color: var(--accent2); }
+
+  .card h2 {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 4px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .card h2 .num {
+    background: var(--accent2);
+    color: #fff;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 10px;
+  }
+
+  .card .insight {
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-bottom: 18px;
+    line-height: 1.5;
+  }
+
+  .chart-container { position: relative; width: 100%; }
+  .chart-container.tall { height: 320px; }
+  .chart-container.medium { height: 280px; }
+
+  .action-box {
+    margin-top: 18px;
+    background: rgba(124, 92, 252, 0.08);
+    border: 1px solid rgba(124, 92, 252, 0.25);
+    border-radius: 10px;
+    padding: 14px 18px;
+  }
+
+  .action-box h3 {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--accent2);
+    margin-bottom: 8px;
+  }
+
+  .action-box ul {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .action-box li {
+    font-size: 13px;
+    color: var(--text);
+    padding-left: 18px;
+    position: relative;
+    line-height: 1.5;
+  }
+
+  .action-box li::before {
+    content: '\25B8';
+    position: absolute;
+    left: 0;
+    color: var(--accent);
+  }
+
+  .footer {
+    text-align: center;
+    padding: 20px 40px 28px;
+    color: var(--text-muted);
+    font-size: 12px;
+    border-top: 1px solid var(--border);
+    margin-top: 10px;
+  }
+
+  @media (max-width: 1000px) {
+    .kpi-row { grid-template-columns: repeat(2, 1fr); }
+    .row-2, .row-3 { grid-template-columns: 1fr; }
+    .header { padding: 20px; }
+    .dashboard { padding: 20px; }
+    .kpi-row { padding: 20px 20px 0; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <img src="adidas-logo.jpg" alt="Adidas" onerror="this.style.display='none'">
+  <div>
+    <h1>Adidas US Retail Sales Dashboard</h1>
+    <div class="subtitle">9,648 transactions | Jan 2020 &ndash; Dec 2021 | 6 Retailers across 5 Regions</div>
+  </div>
+</div>
+
+<div class="kpi-row">
+  <div class="kpi">
+    <div class="label">Total Revenue</div>
+    <div class="value">$899.7M</div>
+    <div class="change up">2021 revenue 4.3x higher than 2020</div>
+  </div>
+  <div class="kpi">
+    <div class="label">Operating Profit</div>
+    <div class="value">$332.0M</div>
+    <div class="change up">36.9% overall operating margin</div>
+  </div>
+  <div class="kpi">
+    <div class="label">Units Sold</div>
+    <div class="value">2.48M</div>
+    <div class="change up">Avg 257 units per transaction</div>
+  </div>
+  <div class="kpi">
+    <div class="label">Avg Sale Value</div>
+    <div class="value">$93,256</div>
+    <div class="change up">Per transaction across all channels</div>
+  </div>
+</div>
+
+<div class="dashboard">
+
+  <!-- Analysis 1: Regional Performance -->
+  <div class="row row-2">
+    <div class="card">
+      <h2><span class="num">1</span> Regional Sales Performance</h2>
+      <p class="insight">West dominates with 30% of total revenue. Midwest lags at 15%, a $134M gap from the top.</p>
+      <div class="chart-container tall"><canvas id="regionChart"></canvas></div>
+      <div class="action-box">
+        <h3>Actionable Outcomes</h3>
+        <ul>
+          <li><strong>Double down on West region</strong> &mdash; allocate 30% of marketing budget to sustain leadership; pilot premium product launches here first</li>
+          <li><strong>Investigate Midwest underperformance</strong> &mdash; conduct retailer-level audit; explore partnerships with regional chains</li>
+          <li><strong>Rebalance South inventory</strong> &mdash; highest units (492K) but lower revenue suggests price sensitivity; test bundle offers</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Analysis 2: Product Category -->
+    <div class="card">
+      <h2><span class="num">2</span> Product Category Profitability</h2>
+      <p class="insight">Men's Street Footwear leads in both revenue ($209M) and margin (39.6%). Women's Athletic Footwear has growth potential.</p>
+      <div class="chart-container tall"><canvas id="productChart"></canvas></div>
+      <div class="action-box">
+        <h3>Actionable Outcomes</h3>
+        <ul>
+          <li><strong>Expand Men's Street Footwear line</strong> &mdash; highest margin (39.6%) and revenue; increase SKU variety and limited editions</li>
+          <li><strong>Boost Women's Athletic Footwear</strong> &mdash; lowest revenue ($107M) but solid 36.6% margin; invest in targeted campaigns</li>
+          <li><strong>Review Men's Athletic pricing</strong> &mdash; lowest margin (33.7%) despite $154M revenue; optimize cost structure or adjust pricing</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Analysis 3: Sales Channel -->
+  <div class="row row-3">
+    <div class="card">
+      <h2><span class="num">3</span> Sales Channel Effectiveness</h2>
+      <p class="insight">Online delivers highest margin (39%) with most transactions (4,889) but lowest avg sale. In-store has highest revenue per transaction.</p>
+      <div class="chart-container medium"><canvas id="methodChart"></canvas></div>
+      <div class="action-box">
+        <h3>Actionable Outcomes</h3>
+        <ul>
+          <li><strong>Scale online channel</strong> &mdash; best margin (39%); invest in e-commerce UX and digital ads</li>
+          <li><strong>Increase in-store basket size</strong> &mdash; already highest per-txn revenue; add cross-sell and loyalty programs</li>
+          <li><strong>Optimize outlet strategy</strong> &mdash; mid-range margins; use as clearance for slow-moving stock only</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Channel Revenue Split</h2>
+      <p class="insight">Revenue distribution across the three sales channels.</p>
+      <div class="chart-container medium"><canvas id="methodPieChart"></canvas></div>
+    </div>
+
+    <div class="card">
+      <h2>Channel Metrics</h2>
+      <p class="insight">Key performance metrics by channel.</p>
+      <table style="width:100%;font-size:13px;margin-top:10px;border-collapse:collapse;">
+        <thead>
+          <tr style="border-bottom:2px solid var(--border);color:var(--text-muted);text-align:left;">
+            <th style="padding:8px 6px;">Channel</th>
+            <th style="padding:8px 6px;">Txns</th>
+            <th style="padding:8px 6px;">Units</th>
+            <th style="padding:8px 6px;">Margin</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr style="border-bottom:1px solid var(--border);">
+            <td style="padding:10px 6px;color:var(--accent);">In-store</td>
+            <td style="padding:10px 6px;">1,740</td>
+            <td style="padding:10px 6px;">689,990</td>
+            <td style="padding:10px 6px;">35.8%</td>
+          </tr>
+          <tr style="border-bottom:1px solid var(--border);">
+            <td style="padding:10px 6px;color:var(--accent4);">Outlet</td>
+            <td style="padding:10px 6px;">3,019</td>
+            <td style="padding:10px 6px;">849,778</td>
+            <td style="padding:10px 6px;">36.5%</td>
+          </tr>
+          <tr>
+            <td style="padding:10px 6px;color:var(--accent2);">Online</td>
+            <td style="padding:10px 6px;">4,889</td>
+            <td style="padding:10px 6px;">939,093</td>
+            <td style="padding:10px 6px;">39.0%</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Analysis 4: Retailer Performance -->
+  <div class="row row-2">
+    <div class="card">
+      <h2><span class="num">4</span> Retailer Performance Comparison</h2>
+      <p class="insight">West Gear & Foot Locker drive 51% of revenue. Sports Direct has the best margin (40.7%) with half the volume.</p>
+      <div class="chart-container tall"><canvas id="retailerChart"></canvas></div>
+      <div class="action-box">
+        <h3>Actionable Outcomes</h3>
+        <ul>
+          <li><strong>Strengthen Sports Direct partnership</strong> &mdash; best margin (40.7%); negotiate expanded shelf space and co-branded campaigns</li>
+          <li><strong>Grow Amazon & Walmart channels</strong> &mdash; combined only 17% of revenue; huge addressable market untapped</li>
+          <li><strong>Renegotiate Kohl's terms</strong> &mdash; low volume and average margins; evaluate ROI of promotional spend</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Analysis 5: Monthly Trend -->
+    <div class="card">
+      <h2><span class="num">5</span> Revenue Growth Trajectory</h2>
+      <p class="insight">2021 saw explosive growth &mdash; July 2021 peaked at $78.3M (4.8x July 2020). Strong seasonality with Q2-Q3 peaks.</p>
+      <div class="chart-container tall"><canvas id="trendChart"></canvas></div>
+      <div class="action-box">
+        <h3>Actionable Outcomes</h3>
+        <ul>
+          <li><strong>Pre-stock for summer surge</strong> &mdash; May-Aug consistently peak; ensure inventory ramp-up begins in March</li>
+          <li><strong>Capitalize on Dec holiday spike</strong> &mdash; Dec 2021 hit $77.8M; create holiday bundles and gift campaigns</li>
+          <li><strong>Address Q4 2020 dip pattern</strong> &mdash; monitor for seasonal slowdowns; deploy targeted promotions in Oct-Nov</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="footer">
+  Adidas US Retail Sales Analysis &bull; Data: 9,648 transactions (Jan 2020 &ndash; Dec 2021) &bull; Built for 28-Day Agentic Analysis Challenge &mdash; Day 1
+</div>
+
+<script>
+Chart.defaults.color = '#8b8fa3';
+Chart.defaults.borderColor = '#2a2e42';
+Chart.defaults.font.family = "'Segoe UI', system-ui, sans-serif";
+
+const COLORS = ['#00d4aa','#7c5cfc','#ff6b6b','#ffd93d','#4ecdc4','#ff9ff3'];
+
+// 1. Region Chart — Grouped Bar
+new Chart(document.getElementById('regionChart'), {
+  type: 'bar',
+  data: {
+    labels: ['West','Northeast','Southeast','South','Midwest'],
+    datasets: [
+      { label: 'Revenue ($M)', data: [269.9,186.1,163.2,144.7,135.8], backgroundColor: '#7c5cfc', borderRadius: 6 },
+      { label: 'Profit ($M)', data: [89.6,67.9,60.6,61.1,52.8], backgroundColor: '#00d4aa', borderRadius: 6 }
+    ]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { position: 'top', labels: { boxWidth: 12, padding: 16 } } },
+    scales: {
+      y: { grid: { color: '#1e2235' }, ticks: { callback: v => '$' + v + 'M' } },
+      x: { grid: { display: false } }
+    }
+  }
+});
+
+// 2. Product Chart — Horizontal Bar
+new Chart(document.getElementById('productChart'), {
+  type: 'bar',
+  data: {
+    labels: ["Men's Street Footwear","Women's Apparel","Men's Athletic Footwear","Women's Street Footwear","Men's Apparel","Women's Athletic Footwear"],
+    datasets: [
+      { label: 'Revenue ($M)', data: [208.6,179.0,153.7,128.0,123.7,106.6], backgroundColor: COLORS, borderRadius: 6 }
+    ]
+  },
+  options: {
+    indexAxis: 'y',
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { display: false } },
+    scales: {
+      x: { grid: { color: '#1e2235' }, ticks: { callback: v => '$' + v + 'M' } },
+      y: { grid: { display: false } }
+    }
+  }
+});
+
+// 3a. Sales Method Bar
+new Chart(document.getElementById('methodChart'), {
+  type: 'bar',
+  data: {
+    labels: ['In-store','Outlet','Online'],
+    datasets: [
+      { label: 'Revenue ($M)', data: [356.4,295.6,247.7], backgroundColor: ['#00d4aa','#ffd93d','#7c5cfc'], borderRadius: 8 }
+    ]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { display: false } },
+    scales: {
+      y: { grid: { color: '#1e2235' }, ticks: { callback: v => '$' + v + 'M' } },
+      x: { grid: { display: false } }
+    }
+  }
+});
+
+// 3b. Method Pie
+new Chart(document.getElementById('methodPieChart'), {
+  type: 'doughnut',
+  data: {
+    labels: ['In-store','Outlet','Online'],
+    datasets: [{
+      data: [356.4,295.6,247.7],
+      backgroundColor: ['#00d4aa','#ffd93d','#7c5cfc'],
+      borderWidth: 0, hoverOffset: 8
+    }]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false, cutout: '60%',
+    plugins: {
+      legend: { position: 'bottom', labels: { boxWidth: 12, padding: 14 } }
+    }
+  }
+});
+
+// 4. Retailer Chart
+new Chart(document.getElementById('retailerChart'), {
+  type: 'bar',
+  data: {
+    labels: ['West Gear','Foot Locker','Sports Direct',"Kohl's",'Amazon','Walmart'],
+    datasets: [
+      { label: 'Revenue ($M)', data: [243.0,219.9,182.5,102.1,77.7,74.6], backgroundColor: '#7c5cfc', borderRadius: 6 },
+      { label: 'Profit ($M)', data: [85.7,80.6,74.3,36.8,28.8,25.8], backgroundColor: '#00d4aa', borderRadius: 6 }
+    ]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { position: 'top', labels: { boxWidth: 12, padding: 16 } } },
+    scales: {
+      y: { grid: { color: '#1e2235' }, ticks: { callback: v => '$' + v + 'M' } },
+      x: { grid: { display: false } }
+    }
+  }
+});
+
+// 5. Monthly Trend — Line
+const months = ['Jan 20','Feb 20','Mar 20','Apr 20','May 20','Jun 20','Jul 20','Aug 20','Sep 20','Oct 20','Nov 20','Dec 20',
+                'Jan 21','Feb 21','Mar 21','Apr 21','May 21','Jun 21','Jul 21','Aug 21','Sep 21','Oct 21','Nov 21','Dec 21'];
+const revenue = [16.0,15.0,17.7,24.6,16.9,8.8,17.1,19.9,18.3,10.8,8.6,8.0,
+                 55.2,46.1,39.1,47.7,63.6,65.9,78.3,72.3,59.4,53.1,59.2,77.8];
+const profit = [5.7,5.2,5.9,9.3,5.9,2.3,4.9,7.3,7.1,4.1,2.8,2.7,
+                19.3,16.2,14.6,18.3,24.1,24.4,29.1,27.1,23.9,20.9,22.0,28.9];
+
+new Chart(document.getElementById('trendChart'), {
+  type: 'line',
+  data: {
+    labels: months,
+    datasets: [
+      {
+        label: 'Revenue ($M)', data: revenue,
+        borderColor: '#7c5cfc', backgroundColor: 'rgba(124,92,252,0.1)',
+        fill: true, tension: 0.4, pointRadius: 3, pointHoverRadius: 6, borderWidth: 2.5
+      },
+      {
+        label: 'Profit ($M)', data: profit,
+        borderColor: '#00d4aa', backgroundColor: 'rgba(0,212,170,0.08)',
+        fill: true, tension: 0.4, pointRadius: 3, pointHoverRadius: 6, borderWidth: 2.5
+      }
+    ]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { position: 'top', labels: { boxWidth: 12, padding: 16 } } },
+    scales: {
+      y: { grid: { color: '#1e2235' }, ticks: { callback: v => '$' + v + 'M' } },
+      x: { grid: { color: '#1e2235' }, ticks: { maxRotation: 45, font: { size: 10 } } }
+    }
+  }
+});
+</script>
+</body>
+</html>
