@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Executive Memo — Hotel Sentiment Analysis</title>
+<style>
+  * { box-sizing:border-box; margin:0; padding:0 }
+  body {
+    background: #0f0f1a;
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    color: #e0e0e0;
+    min-height: 100vh;
+    padding: 40px 20px;
+  }
+  .page {
+    max-width: 900px;
+    margin: 0 auto;
+    background: #13131f;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+  }
+  .memo-header {
+    background: linear-gradient(135deg, #1a1a3e 0%, #0d2137 60%, #1a0d2e 100%);
+    padding: 36px 44px 28px;
+    border-bottom: 1px solid #2a2a4a;
+    position: relative;
+    overflow: hidden;
+  }
+  .memo-header::before {
+    content: '';
+    position: absolute; top:-60px; right:-60px;
+    width: 220px; height: 220px;
+    background: radial-gradient(circle, rgba(108,99,255,0.15) 0%, transparent 70%);
+    border-radius: 50%;
+  }
+  .memo-tag {
+    display: inline-block;
+    background: rgba(108,99,255,0.2);
+    color: #9d97ff;
+    font-size: 11px; font-weight: 700;
+    letter-spacing: 2px; text-transform: uppercase;
+    padding: 4px 14px; border-radius: 20px;
+    border: 1px solid rgba(108,99,255,0.3);
+    margin-bottom: 14px;
+  }
+  .memo-header h1 { font-size: 1.85rem; font-weight: 800; color: #fff; line-height: 1.2; margin-bottom: 18px; }
+  .memo-meta { display: flex; gap: 28px; flex-wrap: wrap; }
+  .meta-item { font-size: 12px; color: #888; }
+  .meta-item span { color: #bbb; font-weight: 500; }
+  .kpi-row { display: grid; grid-template-columns: repeat(6, 1fr); border-bottom: 1px solid #1e1e35; }
+  .kpi { padding: 20px 16px; text-align: center; border-right: 1px solid #1e1e35; }
+  .kpi:last-child { border-right: none; }
+  .kpi:hover { background: #1a1a30; }
+  .kpi .val { font-size: 1.6rem; font-weight: 800; line-height: 1; margin-bottom: 5px; }
+  .kpi .lbl { font-size: 10px; color: #666; text-transform: uppercase; letter-spacing: 1px; }
+  .memo-body { padding: 32px 44px; }
+  .section-title {
+    font-size: 11px; font-weight: 700; letter-spacing: 2px;
+    text-transform: uppercase; color: #6C63FF;
+    margin-bottom: 14px; margin-top: 28px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .section-title::after { content: ''; flex: 1; height: 1px; background: #2a2a4a; }
+  .sentiment-bar { height: 14px; border-radius: 8px; overflow: hidden; display: flex; margin-bottom: 8px; }
+  .bar-pos { background: #2ecc71; }
+  .bar-neu { background: #f1c40f; }
+  .bar-neg { background: #e74c3c; }
+  .bar-legend { display: flex; gap: 20px; font-size: 12px; color: #888; margin-bottom: 24px; }
+  .bar-legend span { display: flex; align-items: center; gap: 6px; }
+  .dot { width:9px; height:9px; border-radius:50%; display:inline-block; }
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+  .complaint-item { margin-bottom: 11px; }
+  .complaint-label { display: flex; justify-content: space-between; font-size: 12px; color: #bbb; margin-bottom: 5px; }
+  .complaint-label .count { color: #e74c3c; font-weight: 600; }
+  .complaint-track { background: #1e1e35; border-radius: 4px; height: 8px; }
+  .complaint-fill { height: 100%; border-radius: 4px; background: linear-gradient(90deg, #e74c3c, #c0392b); }
+  .priority-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; }
+  .priority-card {
+    background: #0f0f1a; border: 1px solid #2a2a4a;
+    border-radius: 12px; padding: 16px; border-top-width: 3px;
+  }
+  .priority-card:hover { transform: translateY(-3px); transition: transform 0.2s; }
+  .priority-card .num { font-size: 1.5rem; font-weight: 800; margin-bottom: 6px; }
+  .priority-card h4 { font-size: 13px; font-weight: 600; color: #fff; margin-bottom: 5px; }
+  .priority-card p  { font-size: 11px; color: #777; line-height: 1.5; }
+  .quote-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .quote-card { border-radius: 12px; padding: 16px; font-size: 12px; font-style: italic; color: #ccc; line-height: 1.65; }
+  .quote-card .label { font-style: normal; font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 8px; }
+  .alert {
+    background: rgba(231,76,60,0.08); border: 1px solid rgba(231,76,60,0.25);
+    border-left: 4px solid #e74c3c; border-radius: 10px; padding: 14px 18px;
+    font-size: 12px; color: #ccc; line-height: 1.6; margin-top: 20px;
+  }
+  .alert strong { color: #e74c3c; }
+  .memo-footer {
+    background: #0d0d18; padding: 16px 44px;
+    display: flex; justify-content: space-between; align-items: center;
+    border-top: 1px solid #1e1e35; font-size: 11px; color: #555;
+  }
+  .memo-footer strong { color: #777; }
+  @media(max-width:700px) { .kpi-row { grid-template-columns: repeat(3,1fr); } .two-col, .priority-grid, .quote-row { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="memo-header">
+    <div class="memo-tag">Confidential &middot; Internal Memo</div>
+    <h1>Guest Sentiment Intelligence Report<br><span style="color:#9d97ff">Hotel Portfolio &mdash; Q1 2026</span></h1>
+    <div class="memo-meta">
+      <div class="meta-item">TO: <span>Hotel General Managers &amp; VP of Operations</span></div>
+      <div class="meta-item">FROM: <span>Business Intelligence / Analytics</span></div>
+      <div class="meta-item">DATE: <span>March 26, 2026</span></div>
+      <div class="meta-item">SUBJECT: <span>Guest Experience Analysis &middot; 35,912 Reviews</span></div>
+    </div>
+  </div>
+
+  <div class="kpi-row">
+    <div class="kpi"><div class="val" style="color:#6C63FF">35,912</div><div class="lbl">Reviews Analyzed</div></div>
+    <div class="kpi"><div class="val" style="color:#2ecc71">71.4%</div><div class="lbl">Positive Sentiment</div></div>
+    <div class="kpi"><div class="val" style="color:#e74c3c">8.0%</div><div class="lbl">Negative Sentiment</div></div>
+    <div class="kpi"><div class="val" style="color:#f1c40f">20.6%</div><div class="lbl">Neutral Sentiment</div></div>
+    <div class="kpi"><div class="val" style="color:#3498db">3.78</div><div class="lbl">Avg Star Rating</div></div>
+    <div class="kpi"><div class="val" style="color:#e67e22">879</div><div class="lbl">Hotels Covered</div></div>
+  </div>
+
+  <div class="memo-body">
+
+    <div class="section-title">Overall Sentiment Landscape</div>
+    <div class="sentiment-bar">
+      <div class="bar-pos" style="width:71.4%"></div>
+      <div class="bar-neu" style="width:20.6%"></div>
+      <div class="bar-neg" style="width:8.0%"></div>
+    </div>
+    <div class="bar-legend">
+      <span><span class="dot" style="background:#2ecc71"></span>Positive 71.4% &mdash; 25,643 reviews</span>
+      <span><span class="dot" style="background:#f1c40f"></span>Neutral 20.6% &mdash; 7,398 reviews</span>
+      <span><span class="dot" style="background:#e74c3c"></span>Negative 8.0% &mdash; 2,871 reviews</span>
+    </div>
+
+    <div class="two-col">
+      <div>
+        <div class="section-title">Top Complaint Categories</div>
+        <div class="complaint-item">
+          <div class="complaint-label"><span>Cleanliness</span><span class="count">1,101 complaints</span></div>
+          <div class="complaint-track"><div class="complaint-fill" style="width:100%"></div></div>
+        </div>
+        <div class="complaint-item">
+          <div class="complaint-label"><span>Room Quality</span><span class="count">1,000 complaints</span></div>
+          <div class="complaint-track"><div class="complaint-fill" style="width:91%"></div></div>
+        </div>
+        <div class="complaint-item">
+          <div class="complaint-label"><span>Staff &amp; Service</span><span class="count">501 complaints</span></div>
+          <div class="complaint-track"><div class="complaint-fill" style="width:45%"></div></div>
+        </div>
+        <div class="complaint-item">
+          <div class="complaint-label"><span>Food &amp; Dining</span><span class="count">409 complaints</span></div>
+          <div class="complaint-track"><div class="complaint-fill" style="width:37%"></div></div>
+        </div>
+        <div class="complaint-item">
+          <div class="complaint-label"><span>Noise</span><span class="count">202 complaints</span></div>
+          <div class="complaint-track"><div class="complaint-fill" style="width:18%"></div></div>
+        </div>
+        <div class="complaint-item">
+          <div class="complaint-label"><span>WiFi / Internet</span><span class="count">167 complaints</span></div>
+          <div class="complaint-track"><div class="complaint-fill" style="width:15%"></div></div>
+        </div>
+      </div>
+      <div>
+        <div class="section-title">Key Findings</div>
+        <div style="font-size:12.5px;color:#bbb;line-height:1.9">
+          <div style="margin-bottom:8px">&#x1F4CA; <strong style="color:#fff">Sentiment is net positive</strong> &mdash; 71.4% of guests leave satisfied, above industry baseline.</div>
+          <div style="margin-bottom:8px">&#x26A0;&#xFE0F; <strong style="color:#fff">182 five-star reviews</strong> contain negative language &mdash; real dissatisfaction is being masked by inflated ratings.</div>
+          <div style="margin-bottom:8px">&#x1F3C6; <strong style="color:#fff">Colorado Springs</strong> ranks #1 happiest city at +0.394 polarity, 89% positive reviews.</div>
+          <div style="margin-bottom:8px">&#x1F4C9; <strong style="color:#fff">Cleanliness + Rooms</strong> together account for <strong style="color:#e74c3c">over 60%</strong> of all negative feedback.</div>
+          <div>&#x1F60A; <strong style="color:#fff">Joy dominates emotions</strong> (54%) but Anger and Disappointment combined reach 31% &mdash; a significant undercurrent.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-title">Recommended Actions &mdash; Priority Order</div>
+    <div class="priority-grid">
+      <div class="priority-card" style="border-top-color:#e74c3c">
+        <div class="num" style="color:#e74c3c">01</div>
+        <h4>Deep-Clean Audit</h4>
+        <p>Cleanliness is the #1 complaint. Deploy post-checkout inspection checklists at all properties immediately.</p>
+      </div>
+      <div class="priority-card" style="border-top-color:#e67e22">
+        <div class="num" style="color:#e67e22">02</div>
+        <h4>Staff Service Training</h4>
+        <p>Rude staff and poor reception attitude appear in the top negative phrases. Mandatory hospitality retraining required.</p>
+      </div>
+      <div class="priority-card" style="border-top-color:#f1c40f">
+        <div class="num" style="color:#f1c40f">03</div>
+        <h4>Fix the Rating Gap</h4>
+        <p>182 guests gave 5 stars but wrote negative reviews. Redesign the post-stay survey to capture true sentiment.</p>
+      </div>
+      <div class="priority-card" style="border-top-color:#3498db">
+        <div class="num" style="color:#3498db">04</div>
+        <h4>Upgrade WiFi</h4>
+        <p>167 complaints cite slow internet. For business travelers this is non-negotiable. Upgrade bandwidth by Q2.</p>
+      </div>
+      <div class="priority-card" style="border-top-color:#9b59b6">
+        <div class="num" style="color:#9b59b6">05</div>
+        <h4>Noise Mitigation</h4>
+        <p>202 noise complaints involve thin walls and street noise. Proactively offer quieter upper-floor rooms at check-in.</p>
+      </div>
+      <div class="priority-card" style="border-top-color:#2ecc71">
+        <div class="num" style="color:#2ecc71">06</div>
+        <h4>Amplify What Works</h4>
+        <p>Location and breakfast drive the most praise. Top-rated hotels hit 90%+ positivity &mdash; replicate their playbook.</p>
+      </div>
+    </div>
+
+    <div class="section-title">Voice of the Guest</div>
+    <div class="quote-row">
+      <div class="quote-card" style="background:#0d2a1a;border:1px solid #1a4a2a">
+        <div class="label" style="color:#2ecc71">What guests love</div>
+        &ldquo;Perfect for my family to relax for the Easter weekend. The location, staff helpfulness, and breakfast spread were absolutely outstanding. Will definitely be back.&rdquo;
+      </div>
+      <div class="quote-card" style="background:#2a0d0d;border:1px solid #4a1a1a">
+        <div class="label" style="color:#e74c3c">What guests hate</div>
+        &ldquo;This hotel is absolutely disgusting. You could not pay me to stay here again. The room smelled of mold, the bathroom was filthy, and when we complained the front desk was rude and dismissive.&rdquo;
+      </div>
+    </div>
+
+    <div class="alert">
+      <strong>Bottom Line:</strong> The portfolio is performing well overall, but Cleanliness and Room Quality are pushing 5-star stays into 1-star reviews. A targeted operational fix in these two areas alone could shift the negative rate from 8% down to under 5%, directly improving OTA rankings and repeat bookings across the portfolio.
+    </div>
+
+  </div>
+
+  <div class="memo-footer">
+    <div>Prepared by: Business Intelligence &amp; Analytics &middot; <strong>CONFIDENTIAL</strong></div>
+    <div>Generated March 26, 2026 &middot; Based on 35,912 guest reviews across 879 hotels</div>
+  </div>
+
+</div>
+</body>
+</html>
