@@ -1,0 +1,12 @@
+{
+  "name": "10x-content-intel",
+  "description": "Content Intelligence Plugin — analyze media libraries (Netflix, YouTube, Spotify) with specialized agents. Scan content catalogs, discover trends, analyze geographic distribution, evaluate genre competition, and generate strategic recommendations with interactive dashboards.",
+  "version": "1.0.0",
+  "author": {
+    "name": "10x.in",
+    "url": "https://10x.in"
+  },
+  "homepage": "https://10x.in/content-intel",
+  "repository": "https://github.com/10x-in/10x-content-intel",
+  "license": "MIT"
+}
