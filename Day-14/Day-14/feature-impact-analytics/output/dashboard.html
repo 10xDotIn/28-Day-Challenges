@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Feature Impact Analytics Dashboard</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { background: #0f0f0f; color: #e0e0e0; font-family: 'Segoe UI', system-ui, sans-serif; padding: 20px; }
+.container { max-width: 1400px; margin: 0 auto; }
+h1 { text-align: center; font-size: 2.2rem; margin-bottom: 8px; background: linear-gradient(90deg, #00d4aa, #4a90d9); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.subtitle { text-align: center; color: #888; margin-bottom: 30px; font-size: 1rem; }
+.hero { display: grid; grid-template-columns: repeat(5, 1fr); gap: 16px; margin-bottom: 30px; }
+.hero-card { background: #1a1a2e; border-radius: 12px; padding: 20px; text-align: center; border: 1px solid #2a2a4a; }
+.hero-card .value { font-size: 2rem; font-weight: 700; color: #00d4aa; }
+.hero-card .label { font-size: 0.85rem; color: #888; margin-top: 4px; }
+.section { margin-bottom: 30px; }
+.section-title { font-size: 1.4rem; font-weight: 600; margin-bottom: 16px; padding-bottom: 8px; border-bottom: 2px solid #2a2a4a; }
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.card { background: #1a1a2e; border-radius: 12px; padding: 20px; border: 1px solid #2a2a4a; }
+.card-full { background: #1a1a2e; border-radius: 12px; padding: 20px; border: 1px solid #2a2a4a; margin-bottom: 20px; }
+canvas { max-width: 100%; }
+.alert-gold { border-left: 4px solid #00ff88; }
+.alert-vanity { border-left: 4px solid #ff4444; }
+.alert-title { font-size: 1.1rem; font-weight: 600; margin-bottom: 8px; }
+.alert-gold .alert-title { color: #00ff88; }
+.alert-vanity .alert-title { color: #ff4444; }
+.alert-stat { color: #aaa; font-size: 0.9rem; margin: 4px 0; }
+.alert-stat strong { color: #e0e0e0; }
+.strategy-board { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+.strat-col { background: #1a1a2e; border-radius: 12px; padding: 16px; border: 1px solid #2a2a4a; }
+.strat-col h3 { text-align: center; padding: 8px; border-radius: 8px; margin-bottom: 12px; font-size: 1rem; }
+.strat-push h3 { background: #00d4aa22; color: #00d4aa; }
+.strat-improve h3 { background: #ffd70022; color: #ffd700; }
+.strat-monitor h3 { background: #4a90d922; color: #4a90d9; }
+.strat-remove h3 { background: #ff444422; color: #ff4444; }
+.strat-item { background: #0f0f1a; border-radius: 8px; padding: 10px; margin-bottom: 8px; font-size: 0.9rem; }
+.strat-item .score { float: right; font-weight: 600; }
+.insight-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 16px; }
+.insight { background: #1a1a2e; border-radius: 12px; padding: 20px; border: 1px solid #2a2a4a; border-top: 3px solid #4a90d9; }
+.insight h4 { color: #4a90d9; margin-bottom: 8px; }
+.heatmap-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+.heatmap-table th, .heatmap-table td { padding: 8px 12px; text-align: center; border: 1px solid #333; }
+.heatmap-table th { background: #2a2a4a; color: #ccc; }
+@media (max-width: 900px) {
+    .hero { grid-template-columns: repeat(2, 1fr); }
+    .grid-2, .strategy-board { grid-template-columns: 1fr; }
+    .grid-3 { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+<div class="container">
+<h1>Feature Impact Analytics</h1>
+<p class="subtitle">Separating signal from noise — which features actually drive business outcomes?</p>
+
+<!-- Hero Section -->
+<div class="hero">
+    <div class="hero-card"><div class="value">10,000</div><div class="label">Total Users</div></div>
+    <div class="hero-card"><div class="value">57.9%</div><div class="label">Overall Retention</div></div>
+    <div class="hero-card"><div class="value">38.9%</div><div class="label">Purchase Rate</div></div>
+    <div class="hero-card"><div class="value">$715,012</div><div class="label">Total Revenue</div></div>
+    <div class="hero-card"><div class="value">12</div><div class="label">Features Analyzed</div></div>
+</div>
+
+<!-- Power Ranking -->
+<div class="section">
+    <div class="section-title">Feature Power Ranking</div>
+    <div class="card-full"><canvas id="powerChart" height="400"></canvas></div>
+</div>
+
+<!-- Truth Chart -->
+<div class="section">
+    <div class="section-title">The Truth Chart — Usage vs Actual Impact</div>
+    <div class="card-full"><canvas id="truthChart" height="400"></canvas></div>
+</div>
+
+<!-- Alerts -->
+<div class="section">
+    <div class="grid-2">
+        <div>
+            <div class="section-title" style="color:#00ff88">Hidden Gold Alert</div>
+            <div class="card alert-gold" style="margin-bottom:12px;">
+        <div class="alert-title">Live_Chat</div>
+        <div class="alert-stat">Usage: <strong>2.4%</strong> | Retention Lift: <strong>+0.159</strong></div>
+        <div class="alert-stat">Purchase Lift: <strong>+0.094</strong> | Power Score: <strong>0.92</strong></div>
+        <div class="alert-stat">Doubling adoption could boost overall metrics significantly</div>
+    </div><div class="card alert-gold" style="margin-bottom:12px;">
+        <div class="alert-title">Wishlist</div>
+        <div class="alert-stat">Usage: <strong>5.2%</strong> | Retention Lift: <strong>+0.132</strong></div>
+        <div class="alert-stat">Purchase Lift: <strong>+0.020</strong> | Power Score: <strong>0.66</strong></div>
+        <div class="alert-stat">Doubling adoption could boost overall metrics significantly</div>
+    </div><div class="card alert-gold" style="margin-bottom:12px;">
+        <div class="alert-title">Notifications</div>
+        <div class="alert-stat">Usage: <strong>9.6%</strong> | Retention Lift: <strong>+0.146</strong></div>
+        <div class="alert-stat">Purchase Lift: <strong>+0.002</strong> | Power Score: <strong>0.45</strong></div>
+        <div class="alert-stat">Doubling adoption could boost overall metrics significantly</div>
+    </div>
+        </div>
+        <div>
+            <div class="section-title" style="color:#ff4444">Vanity Trap Alert</div>
+            <div class="card alert-vanity" style="margin-bottom:12px;">
+        <div class="alert-title">Product_View</div>
+        <div class="alert-stat">Usage: <strong>34.7%</strong> | Retention Lift: <strong>-0.026</strong></div>
+        <div class="alert-stat">Purchase Lift: <strong>-0.015</strong> | Power Score: <strong>0.00</strong></div>
+        <div class="alert-stat">High traffic, low business value — re-evaluate investment</div>
+    </div><div class="card alert-vanity" style="margin-bottom:12px;">
+        <div class="alert-title">Search</div>
+        <div class="alert-stat">Usage: <strong>28.3%</strong> | Retention Lift: <strong>+0.001</strong></div>
+        <div class="alert-stat">Purchase Lift: <strong>-0.002</strong> | Power Score: <strong>0.21</strong></div>
+        <div class="alert-stat">High traffic, low business value — re-evaluate investment</div>
+    </div><div class="card alert-vanity" style="margin-bottom:12px;">
+        <div class="alert-title">Filters</div>
+        <div class="alert-stat">Usage: <strong>24.3%</strong> | Retention Lift: <strong>-0.006</strong></div>
+        <div class="alert-stat">Purchase Lift: <strong>+0.014</strong> | Power Score: <strong>0.25</strong></div>
+        <div class="alert-stat">High traffic, low business value — re-evaluate investment</div>
+    </div>
+        </div>
+    </div>
+</div>
+
+<!-- Retention & Purchase Comparison -->
+<div class="section">
+    <div class="section-title">Retention & Purchase — With vs Without Feature</div>
+    <div class="grid-2">
+        <div class="card"><canvas id="retentionChart" height="350"></canvas></div>
+        <div class="card"><canvas id="purchaseChart" height="350"></canvas></div>
+    </div>
+</div>
+
+<!-- Segment Heatmap -->
+<div class="section">
+    <div class="section-title">Segment Intelligence Heatmap</div>
+    <div class="card-full">
+        <h4 style="margin-bottom:12px; color:#00d4aa;">Retention Lift by Feature x Segment</h4>
+        <table class="heatmap-table" id="segTable"></table>
+    </div>
+</div>
+
+<!-- Funnel -->
+<div class="section">
+    <div class="section-title">Feature Funnel — Feature > Return > Purchase</div>
+    <div class="card-full"><canvas id="funnelChart" height="350"></canvas></div>
+</div>
+
+<!-- Strategy Board -->
+<div class="section">
+    <div class="section-title">Product Strategy Board</div>
+    <div class="strategy-board">
+        <div class="strat-col strat-push"><h3>PUSH</h3><div id="pushItems"></div></div>
+        <div class="strat-col strat-improve"><h3>IMPROVE</h3><div id="improveItems"></div></div>
+        <div class="strat-col strat-monitor"><h3>MONITOR</h3><div id="monitorItems"></div></div>
+        <div class="strat-col strat-remove"><h3>REMOVE</h3><div id="removeItems"></div></div>
+    </div>
+</div>
+
+<!-- Key Insights -->
+<div class="section">
+    <div class="section-title">Key Insights</div>
+    <div class="insight-cards">
+        <div class="insight">
+            <h4>Most Powerful Feature</h4>
+            <p><strong>Live_Chat</strong> — power score 0.92. Drives the highest combined retention and purchase lift across all users.</p>
+        </div>
+        <div class="insight">
+            <h4>Most Misleading Feature</h4>
+            <p><strong>Product_View</strong> — usage 34.7% but power score only 0.00. Feels important, contributes least.</p>
+        </div>
+        <div class="insight">
+            <h4>Biggest Missed Opportunity</h4>
+            <p>Features with strong lift but low adoption. Doubling their reach could meaningfully move retention and revenue needles.</p>
+        </div>
+        <div class="insight">
+            <h4>Segment Insight</h4>
+            <p>Feature effectiveness varies dramatically by user type. One-size-fits-all promotion wastes resources. Personalize feature visibility by segment.</p>
+        </div>
+        <div class="insight">
+            <h4>Immediate Revenue Action</h4>
+            <p>Promote <strong>live_chat</strong> more aggressively — it has proven impact and room to grow across all segments.</p>
+        </div>
+    </div>
+</div>
+
+</div>
+
+<script>
+const data = [{"feature": "live_chat", "usage_rate": 0.0237, "ret_with": 0.7341772151898734, "ret_without": 0.5748233125064017, "ret_lift_abs": 0.15935390268347172, "pur_with": 0.4810126582278481, "pur_without": 0.38717607292840317, "pur_lift_abs": 0.09383658529944494, "rev_lift_abs": 5.5218149121521805, "power_score": 0.919722197537742, "strategy": "PUSH", "rank": 1}, {"feature": "cart", "usage_rate": 0.1698, "ret_with": 0.6083627797408716, "ret_without": 0.572512647554806, "ret_lift_abs": 0.035850132186065586, "pur_with": 0.4734982332155477, "pur_without": 0.3721994700072272, "pur_lift_abs": 0.10129876320832049, "rev_lift_abs": 8.858023914086587, "power_score": 0.7352892501030168, "strategy": "PUSH", "rank": 2}, {"feature": "wishlist", "usage_rate": 0.0519, "ret_with": 0.7032755298651252, "ret_without": 0.57177512920578, "ret_lift_abs": 0.1315004006593452, "pur_with": 0.40847784200385356, "pur_without": 0.38835565868579264, "pur_lift_abs": 0.020122183318060927, "rev_lift_abs": 8.502402074202152, "power_score": 0.6550360831489227, "strategy": "PUSH", "rank": 3}, {"feature": "recommendations", "usage_rate": 0.1533, "ret_with": 0.669928245270711, "ret_without": 0.5620644856501713, "ret_lift_abs": 0.10786375962053973, "pur_with": 0.4298760600130463, "pur_without": 0.3820715719853549, "pur_lift_abs": 0.04780448802769138, "rev_lift_abs": 5.3474128351111005, "power_score": 0.6480448704466779, "strategy": "PUSH", "rank": 4}, {"feature": "notifications", "usage_rate": 0.0961, "ret_with": 0.7107180020811654, "ret_without": 0.5645536010620644, "ret_lift_abs": 0.146164401019101, "pur_with": 0.39125910509885536, "pur_without": 0.3892023453921894, "pur_lift_abs": 0.002056759706665967, "rev_lift_abs": -1.907190524492151, "power_score": 0.45394687226510294, "strategy": "IMPROVE", "rank": 5}, {"feature": "offers", "usage_rate": 0.2344, "ret_with": 0.5925767918088737, "ret_without": 0.5743207941483803, "ret_lift_abs": 0.01825599766049335, "pur_with": 0.42918088737201365, "pur_without": 0.3772204806687565, "pur_lift_abs": 0.051960406703257134, "rev_lift_abs": 3.3606155915991565, "power_score": 0.43778177290954345, "strategy": "MONITOR", "rank": 6}, {"feature": "compare", "usage_rate": 0.0325, "ret_with": 0.6615384615384615, "ret_without": 0.575813953488372, "ret_lift_abs": 0.08572450805008947, "pur_with": 0.40307692307692305, "pur_without": 0.3889405684754522, "pur_lift_abs": 0.014136354601470835, "rev_lift_abs": 0.5137386603061032, "power_score": 0.4055999824078797, "strategy": "IMPROVE", "rank": 7}, {"feature": "reviews", "usage_rate": 0.2169, "ret_with": 0.586906408483172, "ret_without": 0.5762993232026561, "ret_lift_abs": 0.010607085280515904, "pur_with": 0.42692485016136467, "pur_without": 0.37900651257821477, "pur_lift_abs": 0.047918337583149895, "rev_lift_abs": 2.0256576965717414, "power_score": 0.38562932129275296, "strategy": "MONITOR", "rank": 8}, {"feature": "filters", "usage_rate": 0.2434, "ret_with": 0.5743631881676253, "ret_without": 0.5799629923341264, "ret_lift_abs": -0.005599804166501077, "pur_with": 0.40016433853738703, "pur_without": 0.3859370869680148, "pur_lift_abs": 0.014227251569372212, "rev_lift_abs": 2.9800095310269796, "power_score": 0.2505287984161099, "strategy": "MONITOR", "rank": 9}, {"feature": "search", "usage_rate": 0.2831, "ret_with": 0.5796538325679972, "ret_without": 0.5781838471195425, "ret_lift_abs": 0.0014699854484546693, "pur_with": 0.3878488166725539, "pur_without": 0.39001255405216906, "pur_lift_abs": -0.0021637373796151715, "rev_lift_abs": 3.230238811784261, "power_score": 0.21335125140258474, "strategy": "MONITOR", "rank": 10}, {"feature": "share", "usage_rate": 0.1165, "ret_with": 0.5545064377682404, "ret_without": 0.5817770232031693, "ret_lift_abs": -0.027270585434928885, "pur_with": 0.3785407725321888, "pur_without": 0.3908319185059423, "pur_lift_abs": -0.01229114597375347, "rev_lift_abs": 0.1484704950802609, "power_score": 0.0664610610543387, "strategy": "MONITOR", "rank": 11}, {"feature": "product_view", "usage_rate": 0.3474, "ret_with": 0.5613126079447323, "ret_without": 0.5878026356114006, "ret_lift_abs": -0.026490027666668303, "pur_with": 0.3796776050662061, "pur_without": 0.39457554397793443, "pur_lift_abs": -0.014897938911728303, "rev_lift_abs": -3.364824522820115, "power_score": 0.001673001814778713, "strategy": "MONITOR", "rank": 12}];
+const funnelData = [{"feature": "live_chat", "users": 237, "returned": 174, "return_rate": 0.7341772151898734, "purchased_of_returned": 95, "purchase_given_return": 0.5459770114942529, "full_funnel": 0.4008438818565401}, {"feature": "cart", "users": 1698, "returned": 1033, "return_rate": 0.6083627797408716, "purchased_of_returned": 584, "purchase_given_return": 0.5653436592449177, "full_funnel": 0.34393404004711425}, {"feature": "recommendations", "users": 1533, "returned": 1027, "return_rate": 0.669928245270711, "purchased_of_returned": 524, "purchase_given_return": 0.5102239532619279, "full_funnel": 0.34181343770384864}, {"feature": "compare", "users": 325, "returned": 215, "return_rate": 0.6615384615384615, "purchased_of_returned": 106, "purchase_given_return": 0.4930232558139535, "full_funnel": 0.3261538461538461}, {"feature": "wishlist", "users": 519, "returned": 365, "return_rate": 0.7032755298651252, "purchased_of_returned": 169, "purchase_given_return": 0.46301369863013697, "full_funnel": 0.325626204238921}, {"feature": "notifications", "users": 961, "returned": 683, "return_rate": 0.7107180020811654, "purchased_of_returned": 308, "purchase_given_return": 0.45095168374816985, "full_funnel": 0.32049947970863685}, {"feature": "offers", "users": 2344, "returned": 1389, "return_rate": 0.5925767918088737, "purchased_of_returned": 710, "purchase_given_return": 0.5111591072714183, "full_funnel": 0.302901023890785}, {"feature": "reviews", "users": 2169, "returned": 1273, "return_rate": 0.586906408483172, "purchased_of_returned": 653, "purchase_given_return": 0.5129615082482325, "full_funnel": 0.30106039649608113}, {"feature": "search", "users": 2831, "returned": 1641, "return_rate": 0.5796538325679972, "purchased_of_returned": 816, "purchase_given_return": 0.49725776965265084, "full_funnel": 0.28823737195337334}, {"feature": "filters", "users": 2434, "returned": 1398, "return_rate": 0.5743631881676253, "purchased_of_returned": 696, "purchase_given_return": 0.4978540772532189, "full_funnel": 0.28594905505341}, {"feature": "share", "users": 1165, "returned": 646, "return_rate": 0.5545064377682404, "purchased_of_returned": 318, "purchase_given_return": 0.49226006191950467, "full_funnel": 0.2729613733905579}, {"feature": "product_view", "users": 3474, "returned": 1950, "return_rate": 0.5613126079447323, "purchased_of_returned": 942, "purchase_given_return": 0.48307692307692307, "full_funnel": 0.2711571675302245}];
+const segments = ["Inactive", "New", "Power", "Regular", "VIP"];
+const allFeatures = ["cart", "compare", "filters", "live_chat", "notifications", "offers", "product_view", "recommendations", "reviews", "search", "share", "wishlist"];
+const segData = [{"index": "cart", "Inactive": 0.048192832417023046, "New": 0.05035462996976464, "Power": 0.027683644057913015, "Regular": 0.05828473552013125, "VIP": 0.03719666263094179}, {"index": "compare", "Inactive": 0.07865634737840402, "New": 0.06093681093681097, "Power": 0.09788003020822089, "Regular": 0.13677253534055445, "VIP": -0.014880952380952328}, {"index": "filters", "Inactive": -0.018280725649630375, "New": -0.00652275393951629, "Power": 0.005410563434860127, "Regular": -0.03160849328916138, "VIP": -0.002579327700211853}, {"index": "live_chat", "Inactive": 0.10634762379528079, "New": 0.306891845786421, "Power": 0.08803359531514865, "Regular": 0.24174921409780326, "VIP": 0.053451811346548195}, {"index": "notifications", "Inactive": 0.15925749342279105, "New": 0.21577126274276365, "Power": 0.10139519792342633, "Regular": 0.14734386735224447, "VIP": 0.0596396396396397}, {"index": "offers", "Inactive": 0.026769003664097984, "New": 0.002952343089317633, "Power": 0.012863202545068897, "Regular": 0.029042950677583, "VIP": 0.007320769107257541}, {"index": "product_view", "Inactive": -0.024510349736153236, "New": -0.03305067609150536, "Power": -0.008583587602376763, "Regular": -0.026740804222837755, "VIP": 0.004496061497579973}, {"index": "recommendations", "Inactive": 0.15699437409891553, "New": 0.11163145857783396, "Power": 0.07037815126050417, "Regular": 0.12090749248864874, "VIP": 0.061726694339212185}, {"index": "reviews", "Inactive": -0.011789566391014444, "New": 0.03112305373027835, "Power": 0.04820482719103325, "Regular": 0.042283546321823295, "VIP": 0.01616016456035052}, {"index": "search", "Inactive": -0.004989639533974494, "New": -0.0018426925201621147, "Power": -0.02622656941503365, "Regular": -0.0019702909566098326, "VIP": 0.020349094265804224}, {"index": "share", "Inactive": 0.03526912181303116, "New": -0.027772761021812864, "Power": -0.006070519810977837, "Regular": -0.08310401361391273, "VIP": -0.02881393979695135}, {"index": "wishlist", "Inactive": 0.17249120778532545, "New": 0.13018448693778611, "Power": 0.033110710281285094, "Regular": 0.20608116863483616, "VIP": 0.02013469597567452}];
+
+const features = data.map(d => d.feature).sort((a,b) => b.localeCompare(a));
+
+// Sort by power score for ranking
+const ranked = [...data].sort((a,b) => a.power_score - b.power_score);
+
+// Power Ranking Chart
+new Chart(document.getElementById('powerChart'), {
+    type: 'bar',
+    data: {
+        labels: ranked.map(d => d.feature),
+        datasets: [{
+            label: 'Power Score',
+            data: ranked.map(d => d.power_score),
+            backgroundColor: ranked.map(d => {
+                if (d.strategy === 'PUSH') return '#00d4aa';
+                if (d.strategy === 'IMPROVE') return '#ffd700';
+                if (d.strategy === 'REMOVE') return '#ff4444';
+                return '#4a90d9';
+            }),
+            borderRadius: 4,
+        }]
+    },
+    options: {
+        indexAxis: 'y',
+        responsive: true,
+        plugins: { legend: { display: false } },
+        scales: {
+            x: { grid: { color: '#333' }, ticks: { color: '#aaa' } },
+            y: { grid: { display: false }, ticks: { color: '#ccc', font: { size: 12 } } }
+        }
+    }
+});
+
+// Truth Chart
+const truthSorted = [...data].sort((a,b) => a.feature.localeCompare(b.feature));
+new Chart(document.getElementById('truthChart'), {
+    type: 'bar',
+    data: {
+        labels: truthSorted.map(d => d.feature),
+        datasets: [
+            { label: 'Usage Rate', data: truthSorted.map(d => d.usage_rate), backgroundColor: '#4a90d9' },
+            { label: 'Retention Lift', data: truthSorted.map(d => Math.max(0, d.ret_lift_abs)), backgroundColor: '#00d4aa' },
+            { label: 'Purchase Lift', data: truthSorted.map(d => Math.max(0, d.pur_lift_abs)), backgroundColor: '#ff6b6b' },
+        ]
+    },
+    options: {
+        responsive: true,
+        plugins: { legend: { labels: { color: '#ccc' } } },
+        scales: {
+            x: { grid: { color: '#333' }, ticks: { color: '#aaa', maxRotation: 45 } },
+            y: { grid: { color: '#333' }, ticks: { color: '#aaa' } }
+        }
+    }
+});
+
+// Retention comparison
+const retSorted = [...data].sort((a,b) => b.ret_lift_abs - a.ret_lift_abs);
+new Chart(document.getElementById('retentionChart'), {
+    type: 'bar',
+    data: {
+        labels: retSorted.map(d => d.feature),
+        datasets: [
+            { label: 'Without Feature', data: retSorted.map(d => d.ret_without), backgroundColor: '#555' },
+            { label: 'With Feature', data: retSorted.map(d => d.ret_with), backgroundColor: '#00d4aa' },
+        ]
+    },
+    options: {
+        responsive: true,
+        plugins: { title: { display: true, text: 'Retention Rate', color: '#ccc' }, legend: { labels: { color: '#ccc' } } },
+        scales: {
+            x: { ticks: { color: '#aaa', maxRotation: 45 }, grid: { color: '#333' } },
+            y: { ticks: { color: '#aaa' }, grid: { color: '#333' } }
+        }
+    }
+});
+
+// Purchase comparison
+const purSorted = [...data].sort((a,b) => b.pur_lift_abs - a.pur_lift_abs);
+new Chart(document.getElementById('purchaseChart'), {
+    type: 'bar',
+    data: {
+        labels: purSorted.map(d => d.feature),
+        datasets: [
+            { label: 'Without Feature', data: purSorted.map(d => d.pur_without), backgroundColor: '#555' },
+            { label: 'With Feature', data: purSorted.map(d => d.pur_with), backgroundColor: '#ff6b6b' },
+        ]
+    },
+    options: {
+        responsive: true,
+        plugins: { title: { display: true, text: 'Purchase Rate', color: '#ccc' }, legend: { labels: { color: '#ccc' } } },
+        scales: {
+            x: { ticks: { color: '#aaa', maxRotation: 45 }, grid: { color: '#333' } },
+            y: { ticks: { color: '#aaa' }, grid: { color: '#333' } }
+        }
+    }
+});
+
+// Funnel chart (top 6)
+const topFunnel = [...funnelData].sort((a,b) => b.full_funnel - a.full_funnel).slice(0, 6);
+new Chart(document.getElementById('funnelChart'), {
+    type: 'bar',
+    data: {
+        labels: topFunnel.map(d => d.feature),
+        datasets: [
+            { label: 'Return Rate', data: topFunnel.map(d => d.return_rate), backgroundColor: '#4a90d9' },
+            { label: 'Purchase|Return', data: topFunnel.map(d => d.purchase_given_return), backgroundColor: '#00d4aa' },
+            { label: 'Full Funnel', data: topFunnel.map(d => d.full_funnel), backgroundColor: '#ff6b6b' },
+        ]
+    },
+    options: {
+        responsive: true,
+        plugins: { legend: { labels: { color: '#ccc' } } },
+        scales: {
+            x: { ticks: { color: '#aaa' }, grid: { color: '#333' } },
+            y: { ticks: { color: '#aaa' }, grid: { color: '#333' }, max: 1 }
+        }
+    }
+});
+
+// Segment heatmap table
+(function() {
+    const table = document.getElementById('segTable');
+    let html = '<tr><th>Feature</th>';
+    segments.forEach(s => html += '<th>' + s + '</th>');
+    html += '</tr>';
+
+    allFeatures.forEach(feat => {
+        const row = segData.find(r => r.index === feat) || segData.find(r => r[Object.keys(r)[0]] === feat);
+        html += '<tr><td style="text-align:left;font-weight:600;">' + feat + '</td>';
+        segments.forEach(seg => {
+            const val = row ? (row[seg] || 0) : 0;
+            const intensity = Math.min(Math.abs(val) * 5, 1);
+            const color = val > 0
+                ? 'rgba(0, 212, 170, ' + intensity + ')'
+                : 'rgba(255, 68, 68, ' + intensity + ')';
+            html += '<td style="background:' + color + ';color:#fff;font-weight:600;">' + val.toFixed(3) + '</td>';
+        });
+        html += '</tr>';
+    });
+    table.innerHTML = html;
+})();
+
+// Strategy board
+(function() {
+    const containers = {
+        'PUSH': document.getElementById('pushItems'),
+        'IMPROVE': document.getElementById('improveItems'),
+        'MONITOR': document.getElementById('monitorItems'),
+        'REMOVE': document.getElementById('removeItems'),
+    };
+    data.forEach(d => {
+        const target = containers[d.strategy];
+        if (target) {
+            target.innerHTML += '<div class="strat-item">' + d.feature + '<span class="score">' + d.power_score.toFixed(2) + '</span></div>';
+        }
+    });
+    Object.values(containers).forEach(c => {
+        if (!c.innerHTML.trim()) c.innerHTML = '<div class="strat-item" style="color:#666;">None</div>';
+    });
+})();
+</script>
+</body>
+</html>
