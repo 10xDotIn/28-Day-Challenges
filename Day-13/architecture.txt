@@ -1,0 +1,52 @@
+🎯 Business Problem
+
+Banks run marketing campaigns to sell products.
+
+But:
+
+Contacting customers costs money
+Most customers do NOT respond
+Some customers are more likely to respond
+Repeated contact can reduce effectiveness
+
+👉 So the problem is:
+
+“How do we find whom to target and where we are wasting effort?”
+
+📊 What We Are Doing Today
+
+We are NOT building any model.
+
+We are doing analysis to answer 3 things:
+
+Are we over-contacting customers?
+Which customer groups actually respond?
+Does past campaign behavior matter?
+🧠 What Students Should Understand
+More effort ≠ better results
+Not all customers are equal
+Some customers are waste
+Some customers are opportunity
+Decisions > predictions
+
+
+🤖 5 Example Prompts (Agentic Analysis)
+Prompt 1
+
+Analyze this dataset and identify where the campaign is wasting effort. Focus on repeated contacts and low-response patterns.
+
+Prompt 2
+
+Find which customer segments have the highest response rate and which have the lowest. Suggest how targeting should change.
+
+Prompt 3
+
+Check if increasing the number of contacts improves conversion or creates diminishing returns. Explain in business terms.
+
+Prompt 4
+
+Analyze the impact of previous campaign outcomes (poutcome). Should past success influence future targeting?
+
+Prompt 5
+
+Give 3 clear business rules the bank should follow to improve campaign performance based on this dataset.
