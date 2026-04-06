@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Content-to-Customer Targeting</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { background:#0f0f1a; color:#e0e0e0; font-family:'Segoe UI',system-ui,sans-serif; padding:20px; }
+.container { max-width:1500px; margin:0 auto; }
+h1 { text-align:center; font-size:2.4em; margin-bottom:5px; background:linear-gradient(135deg,#4ECDC4,#45B7D1); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+.subtitle { text-align:center; color:#888; margin-bottom:30px; font-size:1.1em; }
+
+.hero { display:grid; grid-template-columns:repeat(4,1fr); gap:15px; margin-bottom:30px; }
+.hero-card { background:linear-gradient(135deg,#1a1a2e,#16213e); border-radius:12px; padding:20px; text-align:center; border:1px solid #2a2a4a; }
+.hero-card .label { color:#888; font-size:0.85em; text-transform:uppercase; letter-spacing:1px; }
+.hero-card .value { font-size:2em; font-weight:900; margin-top:5px; }
+
+.section { margin-bottom:40px; }
+.section h2 { color:#4ECDC4; font-size:1.5em; margin-bottom:15px; padding-bottom:8px; border-bottom:2px solid #2a2a4a; }
+.section p.desc { color:#888; margin-bottom:15px; }
+
+table { width:100%; border-collapse:collapse; background:#1a1a2e; border-radius:10px; overflow:hidden; }
+th { background:#16213e; color:#4ECDC4; padding:12px; text-align:center; font-size:0.85em; text-transform:uppercase; letter-spacing:1px; }
+td { padding:10px 12px; border-bottom:1px solid #2a2a4a; text-align:center; vertical-align:middle; }
+.seg-label { font-weight:700; text-align:left !important; white-space:nowrap; }
+tr:hover { background:#16213e; }
+
+.cell-lift { font-size:1.1em; font-weight:800; }
+.cell-action { font-size:0.8em; font-weight:700; margin-top:2px; }
+
+.combos-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:15px; }
+.combo-card { background:#1a1a2e; border-radius:10px; padding:18px; }
+.combo-card.winner { border-left:4px solid #00b894; }
+.combo-card.loser { border-left:4px solid #e74c3c; }
+.combo-header { display:flex; align-items:center; gap:8px; margin-bottom:8px; }
+.combo-seg { font-weight:700; font-size:1.1em; color:white; }
+.combo-x { color:#888; }
+.combo-camp { color:#4ECDC4; font-weight:600; }
+.combo-lift { font-size:1.8em; font-weight:900; margin:5px 0; }
+.combo-details { display:flex; gap:15px; color:#aaa; font-size:0.9em; margin:8px 0; }
+.combo-verdict { background:#16213e; border-radius:6px; padding:8px; font-size:0.9em; }
+
+.tag { display:inline-block; padding:3px 10px; border-radius:15px; font-size:0.8em; font-weight:600; margin:2px; }
+.tag.send { background:#0a3d2e; color:#00b894; border:1px solid #00b894; }
+.tag.test { background:#3d3a0a; color:#f1c40f; border:1px solid #f1c40f; }
+.tag.stop { background:#3d0a0a; color:#e74c3c; border:1px solid #e74c3c; }
+
+.insight-box { background:linear-gradient(135deg,#0f3460,#1a1a2e); border:2px solid #4ECDC4; border-radius:12px; padding:25px; margin:20px 0; }
+.insight-box h3 { color:#FFEAA7; margin-bottom:12px; font-size:1.3em; }
+.insight-box p { line-height:1.6; margin-bottom:8px; }
+
+.footer { text-align:center; color:#555; padding:20px; font-size:0.9em; }
+</style>
+</head>
+<body>
+<div class="container">
+
+<h1>Content-to-Customer Targeting</h1>
+<p class="subtitle">Which email content drives purchases for which customers &mdash; and which content kills sales</p>
+
+<div class="hero">
+    <div class="hero-card">
+        <div class="label">Combos Analyzed</div>
+        <div class="value" style="color:#45B7D1;">35</div>
+    </div>
+    <div class="hero-card">
+        <div class="label">SEND (lift 3+pp)</div>
+        <div class="value" style="color:#00b894;">5</div>
+    </div>
+    <div class="hero-card">
+        <div class="label">TEST (0-3pp)</div>
+        <div class="value" style="color:#f1c40f;">6</div>
+    </div>
+    <div class="hero-card">
+        <div class="label">STOP (negative lift)</div>
+        <div class="value" style="color:#e74c3c;">24</div>
+    </div>
+</div>
+
+<!-- Insight -->
+<div class="insight-box">
+    <h3>The Content-Customer Mismatch</h3>
+    <p>Out of 35 segment-campaign combinations, only <strong style="color:#00b894;">5</strong> actually increase purchases.
+    <strong style="color:#e74c3c;">24</strong> combinations actively REDUCE purchase rates.
+    The same campaign can be a <strong>winner</strong> for one segment and a <strong>disaster</strong> for another.</p>
+    <p>For example, <strong>Summer Sale</strong> has 0 positive combos but
+    destroys purchases for VIP (-18.6pp) and Regular (-16.4pp). Meanwhile <strong>Flash Deal</strong> works great for
+    Inactive (+5.7pp) but hurts Frequent Buyers (-7.2pp). <em>Content targeting matters more than volume.</em></p>
+</div>
+
+<!-- Master Heatmap -->
+<div class="section">
+    <h2>Targeting Matrix: Every Segment x Campaign Combination</h2>
+    <p class="desc">Each cell shows email lift (pp) and recommended action. Green border = SEND. Yellow = TEST. Red = STOP.</p>
+    <table>
+        <tr><th>Segment</th><th>Flash Deal</th><th>Loyalty Reward</th><th>New Arrival</th><th>Summer Sale</th><th>Weekend Special</th><th>Welcome Series</th><th>Win-Back</th></tr>
+        <tr><td class="seg-label">Regular</td><td style="background:#3d0a0a;border:2px solid #e74c3c;"><div class="cell-lift">-4.0pp</div><div class="cell-action" style="color:#e74c3c;">STOP</div></td><td style="background:#3d0a0a;border:2px solid #e74c3c;"><div class="cell-lift">-6.5pp</div><div class="cell-action" style="color:#e74c3c;">STOP</div></td><td style="background:#3d0a0a;border:2px solid #e74c3c;"><div class="cell-lift">-8.7pp</div><div class="cell-action" style="color:#e74c3c;">STOP</div></td><td style="background:#3d0a0a;border:2px solid #e74c3c;"><div class="cell-lift">-16.4pp</div><div class="cell-action" style="color:#e74c3c;">STOP</div></td><td style="background:#3d0a0a;border:2px solid #e74c3c;"><div class="cell-lift">-3.0pp</div><div class="cell-action" style="color:#e74c3c;">STOP</div></td><td style="background:#3d3a0a;border:2px solid #f1c40f;"><div class="cell-lift">+0.9pp</div><div class="cell-action" style="color:#f1c40f;">TEST</div></td><td style="background:#3d0a0a;border:2px solid #e74c3c;"><div class="cell-lift">-11.7pp</div><div class="cell-action" style="color:#e74c3c;">STOP</div></td></tr><tr><td class="seg-label">VIP</td><td style="background:#3d0a0a;border:2px solid #e74c3c;"><div class="cell-lift">-7.8pp</div><div class="cell-action" style="color:#e74c3c;">STOP</div></td><td style="background:#3d0a0a;border:2px solid #e74c3c;"><div class="cell-lift">-1.6pp</div><div class="cell-action" style="color:#e74c3c;">STOP</div></td><td style="background:#3d0a0a;border:2px solid #e74c3c;"><div class="cell-lift">-10.7pp</div><div class="cell-action" style="color:#e74c3c;">STOP</div></td><td style="background:#3d0a0a;border:2px solid #e74c3c;"><div class="cell-lift">-18.6pp</div><div class="cell-action" style="color:#e74c3c;">STOP</div></td><td style="background:#3d0a0a;border:2px solid #e74c3c;"><div class="cell-lift">-10.8pp</div><div class="cell-action" style="color:#e74c3c;">STOP</div></td><td style="background:#0a3d2e;border:2px solid #00b894;"><div class="cell-lift">+4.8pp</div><div class="cell-action" style="color:#00b894;">SEND</div></td><td style="background:#3d3a0a;border:2px solid #f1c40f;"><div class="cell-lift">+0.5pp</div><div class="cell-action" style="color:#f1c40f;">TEST</div></td></tr><tr><td class="seg-label">Frequent Buyer</td><td style="background:#3d0a0a;border:2px solid #e74c3c;"><div class="cell-lift">-7.2pp</div><div class="cell-action" style="color:#e74c3c;">STOP</div></td><td style="background:#3d0a0a;border:2px solid #e74c3c;"><div class="cell-lift">-6.6pp</div><div class="cell-action" style="color:#e74c3c;">STOP</div></td><td style="background:#0a3d2e;border:2px solid #00b894;"><div class="cell-lift">+3.5pp</div><div class="cell-action" style="color:#00b894;">SEND</div></td><td style="background:#3d0a0a;border:2px solid #e74c3c;"><div class="cell-lift">-10.8pp</div><div class="cell-action" style="color:#e74c3c;">STOP</div></td><td style="background:#3d0a0a;border:2px solid #e74c3c;"><div class="cell-lift">-4.1pp</div><div class="cell-action" style="color:#e74c3c;">STOP</div></td><td style="background:#3d3a0a;border:2px solid #f1c40f;"><div class="cell-lift">-0.0pp</div><div class="cell-action" style="color:#f1c40f;">TEST</div></td><td style="background:#3d0a0a;border:2px solid #e74c3c;"><div class="cell-lift">-8.8pp</div><div class="cell-action" style="color:#e74c3c;">STOP</div></td></tr><tr><td class="seg-label">New User</td><td style="background:#0a3d2e;border:2px solid #00b894;"><div class="cell-lift">+4.1pp</div><div class="cell-action" style="color:#00b894;">SEND</div></td><td style="background:#3d0a0a;border:2px solid #e74c3c;"><div class="cell-lift">-8.7pp</div><div class="cell-action" style="color:#e74c3c;">STOP</div></td><td style="background:#3d0a0a;border:2px solid #e74c3c;"><div class="cell-lift">-6.6pp</div><div class="cell-action" style="color:#e74c3c;">STOP</div></td><td style="background:#3d0a0a;border:2px solid #e74c3c;"><div class="cell-lift">-4.0pp</div><div class="cell-action" style="color:#e74c3c;">STOP</div></td><td style="background:#0a3d2e;border:2px solid #00b894;"><div class="cell-lift">+6.4pp</div><div class="cell-action" style="color:#00b894;">SEND</div></td><td style="background:#3d0a0a;border:2px solid #e74c3c;"><div class="cell-lift">-1.7pp</div><div class="cell-action" style="color:#e74c3c;">STOP</div></td><td style="background:#3d0a0a;border:2px solid #e74c3c;"><div class="cell-lift">-5.9pp</div><div class="cell-action" style="color:#e74c3c;">STOP</div></td></tr><tr><td class="seg-label">Inactive</td><td style="background:#0a3d2e;border:2px solid #00b894;"><div class="cell-lift">+5.7pp</div><div class="cell-action" style="color:#00b894;">SEND</div></td><td style="background:#3d0a0a;border:2px solid #e74c3c;"><div class="cell-lift">-0.7pp</div><div class="cell-action" style="color:#e74c3c;">STOP</div></td><td style="background:#3d3a0a;border:2px solid #f1c40f;"><div class="cell-lift">+2.6pp</div><div class="cell-action" style="color:#f1c40f;">TEST</div></td><td style="background:#3d0a0a;border:2px solid #e74c3c;"><div class="cell-lift">-0.3pp</div><div class="cell-action" style="color:#e74c3c;">STOP</div></td><td style="background:#3d3a0a;border:2px solid #f1c40f;"><div class="cell-lift">+0.9pp</div><div class="cell-action" style="color:#f1c40f;">TEST</div></td><td style="background:#3d0a0a;border:2px solid #e74c3c;"><div class="cell-lift">-3.7pp</div><div class="cell-action" style="color:#e74c3c;">STOP</div></td><td style="background:#3d3a0a;border:2px solid #f1c40f;"><div class="cell-lift">+2.8pp</div><div class="cell-action" style="color:#f1c40f;">TEST</div></td></tr>
+    </table>
+</div>
+
+<!-- Winners -->
+<div class="section">
+    <h2>Top Winning Combos &mdash; Content That DRIVES Purchases</h2>
+    <p class="desc">These segment-campaign pairs show strong positive lift. Email these users THIS content.</p>
+    <div class="combos-grid"><div class="combo-card winner">
+        <div class="combo-header">
+            <span class="combo-seg">New User</span>
+            <span class="combo-x">x</span>
+            <span class="combo-camp">Weekend Special</span>
+        </div>
+        <div class="combo-lift" style="color:#00b894;">+6.4pp lift</div>
+        <div class="combo-details">
+            <span>Open: 35.9%</span>
+            <span>Click: 13.8%</span>
+            <span>ROI: $+1,344</span>
+        </div>
+        <div class="combo-verdict">This content DRIVES purchases for this audience</div>
+    </div><div class="combo-card winner">
+        <div class="combo-header">
+            <span class="combo-seg">Inactive</span>
+            <span class="combo-x">x</span>
+            <span class="combo-camp">Flash Deal</span>
+        </div>
+        <div class="combo-lift" style="color:#00b894;">+5.7pp lift</div>
+        <div class="combo-details">
+            <span>Open: 25.6%</span>
+            <span>Click: 5.8%</span>
+            <span>ROI: $+1,120</span>
+        </div>
+        <div class="combo-verdict">This content DRIVES purchases for this audience</div>
+    </div><div class="combo-card winner">
+        <div class="combo-header">
+            <span class="combo-seg">VIP</span>
+            <span class="combo-x">x</span>
+            <span class="combo-camp">Welcome Series</span>
+        </div>
+        <div class="combo-lift" style="color:#00b894;">+4.8pp lift</div>
+        <div class="combo-details">
+            <span>Open: 60.5%</span>
+            <span>Click: 32.7%</span>
+            <span>ROI: $+909</span>
+        </div>
+        <div class="combo-verdict">This content DRIVES purchases for this audience</div>
+    </div><div class="combo-card winner">
+        <div class="combo-header">
+            <span class="combo-seg">New User</span>
+            <span class="combo-x">x</span>
+            <span class="combo-camp">Flash Deal</span>
+        </div>
+        <div class="combo-lift" style="color:#00b894;">+4.1pp lift</div>
+        <div class="combo-details">
+            <span>Open: 49.4%</span>
+            <span>Click: 11.6%</span>
+            <span>ROI: $+651</span>
+        </div>
+        <div class="combo-verdict">This content DRIVES purchases for this audience</div>
+    </div><div class="combo-card winner">
+        <div class="combo-header">
+            <span class="combo-seg">Frequent Buyer</span>
+            <span class="combo-x">x</span>
+            <span class="combo-camp">New Arrival</span>
+        </div>
+        <div class="combo-lift" style="color:#00b894;">+3.5pp lift</div>
+        <div class="combo-details">
+            <span>Open: 63.9%</span>
+            <span>Click: 30.4%</span>
+            <span>ROI: $+637</span>
+        </div>
+        <div class="combo-verdict">This content DRIVES purchases for this audience</div>
+    </div><div class="combo-card winner">
+        <div class="combo-header">
+            <span class="combo-seg">Inactive</span>
+            <span class="combo-x">x</span>
+            <span class="combo-camp">Win-Back</span>
+        </div>
+        <div class="combo-lift" style="color:#00b894;">+2.8pp lift</div>
+        <div class="combo-details">
+            <span>Open: 28.3%</span>
+            <span>Click: 6.8%</span>
+            <span>ROI: $+446</span>
+        </div>
+        <div class="combo-verdict">This content DRIVES purchases for this audience</div>
+    </div></div>
+</div>
+
+<!-- Losers -->
+<div class="section">
+    <h2>Top Losing Combos &mdash; Content That KILLS Purchases</h2>
+    <p class="desc">These segment-campaign pairs have strong negative lift. Stop sending this content to these users immediately.</p>
+    <div class="combos-grid"><div class="combo-card loser">
+        <div class="combo-header">
+            <span class="combo-seg">VIP</span>
+            <span class="combo-x">x</span>
+            <span class="combo-camp">Summer Sale</span>
+        </div>
+        <div class="combo-lift" style="color:#e74c3c;">-18.6pp lift</div>
+        <div class="combo-details">
+            <span>Open: 72.8%</span>
+            <span>Click: 35.4%</span>
+            <span>Lost: $2,806</span>
+        </div>
+        <div class="combo-verdict">This content KILLS purchases for this audience</div>
+    </div><div class="combo-card loser">
+        <div class="combo-header">
+            <span class="combo-seg">Regular</span>
+            <span class="combo-x">x</span>
+            <span class="combo-camp">Summer Sale</span>
+        </div>
+        <div class="combo-lift" style="color:#e74c3c;">-16.4pp lift</div>
+        <div class="combo-details">
+            <span>Open: 42.6%</span>
+            <span>Click: 14.9%</span>
+            <span>Lost: $3,494</span>
+        </div>
+        <div class="combo-verdict">This content KILLS purchases for this audience</div>
+    </div><div class="combo-card loser">
+        <div class="combo-header">
+            <span class="combo-seg">Regular</span>
+            <span class="combo-x">x</span>
+            <span class="combo-camp">Win-Back</span>
+        </div>
+        <div class="combo-lift" style="color:#e74c3c;">-11.7pp lift</div>
+        <div class="combo-details">
+            <span>Open: 45.5%</span>
+            <span>Click: 14.0%</span>
+            <span>Lost: $1,956</span>
+        </div>
+        <div class="combo-verdict">This content KILLS purchases for this audience</div>
+    </div><div class="combo-card loser">
+        <div class="combo-header">
+            <span class="combo-seg">VIP</span>
+            <span class="combo-x">x</span>
+            <span class="combo-camp">Weekend Special</span>
+        </div>
+        <div class="combo-lift" style="color:#e74c3c;">-10.8pp lift</div>
+        <div class="combo-details">
+            <span>Open: 59.5%</span>
+            <span>Click: 32.5%</span>
+            <span>Lost: $2,108</span>
+        </div>
+        <div class="combo-verdict">This content KILLS purchases for this audience</div>
+    </div><div class="combo-card loser">
+        <div class="combo-header">
+            <span class="combo-seg">Frequent Buyer</span>
+            <span class="combo-x">x</span>
+            <span class="combo-camp">Summer Sale</span>
+        </div>
+        <div class="combo-lift" style="color:#e74c3c;">-10.8pp lift</div>
+        <div class="combo-details">
+            <span>Open: 65.5%</span>
+            <span>Click: 29.2%</span>
+            <span>Lost: $1,875</span>
+        </div>
+        <div class="combo-verdict">This content KILLS purchases for this audience</div>
+    </div><div class="combo-card loser">
+        <div class="combo-header">
+            <span class="combo-seg">VIP</span>
+            <span class="combo-x">x</span>
+            <span class="combo-camp">New Arrival</span>
+        </div>
+        <div class="combo-lift" style="color:#e74c3c;">-10.7pp lift</div>
+        <div class="combo-details">
+            <span>Open: 58.4%</span>
+            <span>Click: 29.2%</span>
+            <span>Lost: $1,856</span>
+        </div>
+        <div class="combo-verdict">This content KILLS purchases for this audience</div>
+    </div></div>
+</div>
+
+<!-- Playbook -->
+<div class="section">
+    <h2>Content Playbook: What to Send Each Segment</h2>
+    <table>
+        <tr><th>Segment</th><th>SEND These Campaigns</th><th>TEST These</th><th>STOP These</th><th>Potential ROI</th><th>Wasted</th></tr>
+        <tr>
+        <td class="seg-label">Frequent Buyer</td>
+        <td><span class="tag send">New Arrival (+3.5pp)</span></td>
+        <td><span class="tag test">Welcome Series (-0.0pp)</span></td>
+        <td><span class="tag stop">Weekend Special (-4.1pp)</span><span class="tag stop">Loyalty Reward (-6.6pp)</span><span class="tag stop">Flash Deal (-7.2pp)</span><span class="tag stop">Win-Back (-8.8pp)</span><span class="tag stop">Summer Sale (-10.8pp)</span></td>
+        <td style="color:#00b894;font-weight:700;">$+637</td>
+        <td style="color:#e74c3c;font-weight:700;">$6,898</td>
+    </tr><tr>
+        <td class="seg-label">Inactive</td>
+        <td><span class="tag send">Flash Deal (+5.7pp)</span></td>
+        <td><span class="tag test">Win-Back (+2.8pp)</span><span class="tag test">New Arrival (+2.6pp)</span><span class="tag test">Weekend Special (+0.9pp)</span></td>
+        <td><span class="tag stop">Summer Sale (-0.3pp)</span><span class="tag stop">Loyalty Reward (-0.7pp)</span><span class="tag stop">Welcome Series (-3.7pp)</span></td>
+        <td style="color:#00b894;font-weight:700;">$+1,120</td>
+        <td style="color:#e74c3c;font-weight:700;">$868</td>
+    </tr><tr>
+        <td class="seg-label">New User</td>
+        <td><span class="tag send">Weekend Special (+6.4pp)</span><span class="tag send">Flash Deal (+4.1pp)</span></td>
+        <td></td>
+        <td><span class="tag stop">Welcome Series (-1.7pp)</span><span class="tag stop">Summer Sale (-4.0pp)</span><span class="tag stop">Win-Back (-5.9pp)</span><span class="tag stop">New Arrival (-6.6pp)</span><span class="tag stop">Loyalty Reward (-8.7pp)</span></td>
+        <td style="color:#00b894;font-weight:700;">$+1,995</td>
+        <td style="color:#e74c3c;font-weight:700;">$4,733</td>
+    </tr><tr>
+        <td class="seg-label">Regular</td>
+        <td><span style="color:#666;">None</span></td>
+        <td><span class="tag test">Welcome Series (+0.9pp)</span></td>
+        <td><span class="tag stop">Weekend Special (-3.0pp)</span><span class="tag stop">Flash Deal (-4.0pp)</span><span class="tag stop">Loyalty Reward (-6.5pp)</span><span class="tag stop">New Arrival (-8.7pp)</span><span class="tag stop">Win-Back (-11.7pp)</span><span class="tag stop">Summer Sale (-16.4pp)</span></td>
+        <td style="color:#00b894;font-weight:700;">$+0</td>
+        <td style="color:#e74c3c;font-weight:700;">$9,334</td>
+    </tr><tr>
+        <td class="seg-label">VIP</td>
+        <td><span class="tag send">Welcome Series (+4.8pp)</span></td>
+        <td><span class="tag test">Win-Back (+0.5pp)</span></td>
+        <td><span class="tag stop">Loyalty Reward (-1.6pp)</span><span class="tag stop">Flash Deal (-7.8pp)</span><span class="tag stop">New Arrival (-10.7pp)</span><span class="tag stop">Weekend Special (-10.8pp)</span><span class="tag stop">Summer Sale (-18.6pp)</span></td>
+        <td style="color:#00b894;font-weight:700;">$+909</td>
+        <td style="color:#e74c3c;font-weight:700;">$8,639</td>
+    </tr>
+    </table>
+</div>
+
+<!-- Key Insight -->
+<div class="insight-box">
+    <h3>Bottom Line: Target the Content, Not Just the Volume</h3>
+    <p><strong>1. Inactive users</strong> respond to <strong>Flash Deal</strong> (+5.7pp) and <strong>Win-Back</strong> (+2.8pp) but are HURT by Welcome Series (-3.8pp).</p>
+    <p><strong>2. New Users</strong> respond to <strong>Weekend Special</strong> (+6.4pp) and <strong>Flash Deal</strong> (+4.1pp) but are HURT by Loyalty Reward (-8.7pp) and New Arrival (-6.6pp).</p>
+    <p><strong>3. VIPs</strong> only respond to <strong>Welcome Series</strong> (+4.8pp). Every other campaign REDUCES their purchases, especially Summer Sale (-18.6pp).</p>
+    <p><strong>4. Frequent Buyers</strong> only respond to <strong>New Arrival</strong> (+3.5pp). Sales campaigns kill their purchase rate.</p>
+    <p><strong>5. Regular</strong> users barely respond to any email. Best bet is Welcome Series (+0.9pp) but it's marginal.</p>
+    <p style="margin-top:15px;font-size:1.1em;"><strong style="color:#4ECDC4;">The fix isn't "email more" or "email less" &mdash; it's "email the RIGHT content to the RIGHT person."</strong></p>
+</div>
+
+<div class="footer">Content-to-Customer Targeting Analysis | Generated 2026-03-31 | 8,000 records, 35 combinations analyzed</div>
+
+</div>
+</body>
+</html>

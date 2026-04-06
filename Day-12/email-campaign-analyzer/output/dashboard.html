@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Email Campaign Targeting Analyzer</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { background: #0f0f1a; color: #e0e0e0; font-family: 'Segoe UI', system-ui, sans-serif; padding: 20px; }
+.container { max-width: 1400px; margin: 0 auto; }
+h1 { text-align: center; font-size: 2.2em; margin-bottom: 5px; background: linear-gradient(135deg, #4ECDC4, #45B7D1); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.subtitle { text-align: center; color: #888; margin-bottom: 30px; font-size: 1.1em; }
+.hero { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; margin-bottom: 30px; }
+.hero-card { background: linear-gradient(135deg, #1a1a2e, #16213e); border-radius: 12px; padding: 20px; text-align: center; border: 1px solid #2a2a4a; }
+.hero-card .label { color: #888; font-size: 0.85em; text-transform: uppercase; letter-spacing: 1px; }
+.hero-card .value { font-size: 2em; font-weight: 800; margin-top: 5px; }
+.hero-card .value.green { color: #00b894; }
+.hero-card .value.blue { color: #45B7D1; }
+.hero-card .value.yellow { color: #FFEAA7; }
+.hero-card .value.red { color: #e74c3c; }
+.hero-card .value.purple { color: #DDA0DD; }
+.section { margin-bottom: 35px; }
+.section h2 { color: #4ECDC4; font-size: 1.5em; margin-bottom: 15px; padding-bottom: 8px; border-bottom: 2px solid #2a2a4a; }
+.card { background: #1a1a2e; border-radius: 10px; padding: 20px; border: 1px solid #2a2a4a; }
+.cards-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 15px; }
+.alert-red { border-left: 4px solid #e74c3c; }
+.alert-green { border-left: 4px solid #00b894; }
+.big-number { font-size: 1.8em; font-weight: 800; margin-top: 10px; }
+table { width: 100%; border-collapse: collapse; background: #1a1a2e; border-radius: 10px; overflow: hidden; }
+th { background: #16213e; color: #4ECDC4; padding: 12px 15px; text-align: left; font-size: 0.9em; text-transform: uppercase; letter-spacing: 1px; }
+td { padding: 10px 15px; border-bottom: 1px solid #2a2a4a; }
+tr:hover { background: #16213e; }
+.badge { padding: 4px 12px; border-radius: 20px; font-size: 0.85em; font-weight: 700; color: white; display: inline-block; }
+.funnel-bar { display: flex; align-items: center; margin: 8px 0; }
+.funnel-bar .bar { height: 40px; border-radius: 6px; display: flex; align-items: center; padding: 0 15px; font-weight: 700; color: white; min-width: 60px; transition: width 0.5s; }
+.funnel-bar .label-text { width: 100px; text-align: right; margin-right: 15px; font-weight: 600; }
+.funnel-bar .drop { margin-left: 15px; color: #e74c3c; font-weight: 700; }
+.chart-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 10px; margin-top: 15px; }
+.bar-group { background: #16213e; border-radius: 8px; padding: 15px; text-align: center; }
+.bar-pair { display: flex; justify-content: center; gap: 8px; align-items: flex-end; height: 150px; margin: 10px 0; }
+.bar-single { width: 40px; border-radius: 4px 4px 0 0; position: relative; display: flex; align-items: flex-start; justify-content: center; }
+.bar-single span { position: absolute; top: -20px; font-size: 0.8em; font-weight: 700; }
+.lift-badge { font-size: 1.1em; font-weight: 800; }
+.insight-card { background: linear-gradient(135deg, #1a1a2e, #0f3460); border-radius: 10px; padding: 20px; border-left: 4px solid #4ECDC4; margin-bottom: 10px; }
+.insight-card h3 { color: #FFEAA7; margin-bottom: 8px; }
+.roi-box { background: linear-gradient(135deg, #0f3460, #1a1a2e); border: 2px solid #00b894; border-radius: 12px; padding: 25px; text-align: center; margin: 20px 0; }
+.roi-box .roi-value { font-size: 3em; font-weight: 900; color: #00b894; }
+.footer { text-align: center; color: #555; padding: 20px; font-size: 0.9em; }
+</style>
+</head>
+<body>
+<div class="container">
+
+<h1>📧 Email Campaign Targeting Analyzer</h1>
+<p class="subtitle">Analyzing 8,000 user-campaign records across 5 segments and 7 campaigns</p>
+
+<!-- Hero Metrics -->
+<div class="hero">
+    <div class="hero-card"><div class="label">Emails Sent</div><div class="value blue">5,959</div></div>
+    <div class="hero-card"><div class="label">Open Rate</div><div class="value green">45.5%</div></div>
+    <div class="hero-card"><div class="label">Click Rate</div><div class="value yellow">39.8%</div></div>
+    <div class="hero-card"><div class="label">Conversion Rate</div><div class="value purple">55.9%</div></div>
+    <div class="hero-card"><div class="label">Total Revenue</div><div class="value green">$238,707</div></div>
+    <div class="hero-card"><div class="label">Wasted Email Cost</div><div class="value red">$298</div></div>
+</div>
+
+<!-- Funnel -->
+<div class="section">
+<h2>📊 Email Funnel</h2>
+<div class="card">
+    <div class="funnel-bar">
+        <span class="label-text">Sent</span>
+        <div class="bar" style="width:100%; background:#4ECDC4;">5,959</div>
+    </div>
+    <div class="funnel-bar">
+        <span class="label-text">Opened</span>
+        <div class="bar" style="width:46%; background:#45B7D1;">2,713</div>
+        <span class="drop">▼ 54.5% drop</span>
+    </div>
+    <div class="funnel-bar">
+        <span class="label-text">Clicked</span>
+        <div class="bar" style="width:18%; background:#FFEAA7; color:#333;">1,079</div>
+        <span class="drop">▼ 60.2% drop</span>
+    </div>
+    <div class="funnel-bar">
+        <span class="label-text">Purchased</span>
+        <div class="bar" style="width:36%; background:#FF6B6B;">2,171</div>
+        <span class="drop">▼ 44.1% drop</span>
+    </div>
+</div>
+</div>
+
+<!-- Email vs No Email -->
+<div class="section">
+<h2>🎯 Does Email Work? Purchase Rate by Segment</h2>
+<div class="chart-container">
+<div class="bar-group">
+        <div style="font-weight:700;margin-bottom:5px;">Frequent Buyer</div>
+        <div class="bar-pair">
+            <div class="bar-single" style="height:129.37468900315142px; background:#636e72;"><span>60.0%</span></div>
+            <div class="bar-single" style="height:118.16221595621164px; background:#00b894;"><span>54.8%</span></div>
+        </div>
+        <div style="font-size:0.8em;color:#888;">No Email &nbsp; | &nbsp; Email</div>
+        <div class="lift-badge" style="color:#e74c3c; margin-top:5px;">+-5.1pp lift</div>
+    </div><div class="bar-group">
+        <div style="font-weight:700;margin-bottom:5px;">Inactive</div>
+        <div class="bar-pair">
+            <div class="bar-single" style="height:11.212473046939792px; background:#636e72;"><span>5.2%</span></div>
+            <div class="bar-single" style="height:13.799966827002821px; background:#00b894;"><span>6.4%</span></div>
+        </div>
+        <div style="font-size:0.8em;color:#888;">No Email &nbsp; | &nbsp; Email</div>
+        <div class="lift-badge" style="color:#e74c3c; margin-top:5px;">+1.1pp lift</div>
+    </div><div class="bar-group">
+        <div style="font-weight:700;margin-bottom:5px;">New User</div>
+        <div class="bar-pair">
+            <div class="bar-single" style="height:21.562448167191906px; background:#636e72;"><span>10.0%</span></div>
+            <div class="bar-single" style="height:16.171836125393927px; background:#00b894;"><span>7.5%</span></div>
+        </div>
+        <div style="font-size:0.8em;color:#888;">No Email &nbsp; | &nbsp; Email</div>
+        <div class="lift-badge" style="color:#e74c3c; margin-top:5px;">+-2.5pp lift</div>
+    </div><div class="bar-group">
+        <div style="font-weight:700;margin-bottom:5px;">Regular</div>
+        <div class="bar-pair">
+            <div class="bar-single" style="height:34.28429258583513px; background:#636e72;"><span>15.9%</span></div>
+            <div class="bar-single" style="height:19.621827832144636px; background:#00b894;"><span>9.1%</span></div>
+        </div>
+        <div style="font-size:0.8em;color:#888;">No Email &nbsp; | &nbsp; Email</div>
+        <div class="lift-badge" style="color:#e74c3c; margin-top:5px;">+-6.8pp lift</div>
+    </div><div class="bar-group">
+        <div style="font-weight:700;margin-bottom:5px;">VIP</div>
+        <div class="bar-pair">
+            <div class="bar-single" style="height:130.0215624481672px; background:#636e72;"><span>60.3%</span></div>
+            <div class="bar-single" style="height:114.06535080444517px; background:#00b894;"><span>52.9%</span></div>
+        </div>
+        <div style="font-size:0.8em;color:#888;">No Email &nbsp; | &nbsp; Email</div>
+        <div class="lift-badge" style="color:#e74c3c; margin-top:5px;">+-7.4pp lift</div>
+    </div></div>
+</div>
+
+<!-- Over-Targeting -->
+<div class="section">
+<h2>🔴 Over-Targeting Alert — Wasted Money</h2>
+<p style="color:#888;margin-bottom:15px;">These segments buy at similar rates with or without email. You're paying to convince people who already decided to buy.</p>
+<div class="cards-grid"><div class="card alert-red">
+        <h3>⚠️ VIP</h3>
+        <p>Email lift: <strong>+-7.4pp</strong></p>
+        <p>Emails sent: 1,192</p>
+        <p class="big-number" style="color:#e74c3c">$60 wasted</p>
+    </div><div class="card alert-red">
+        <h3>⚠️ Regular</h3>
+        <p>Email lift: <strong>+-6.8pp</strong></p>
+        <p>Emails sent: 1,216</p>
+        <p class="big-number" style="color:#e74c3c">$61 wasted</p>
+    </div><div class="card alert-red">
+        <h3>⚠️ Frequent Buyer</h3>
+        <p>Email lift: <strong>+-5.1pp</strong></p>
+        <p>Emails sent: 1,167</p>
+        <p class="big-number" style="color:#e74c3c">$58 wasted</p>
+    </div><div class="card alert-red">
+        <h3>⚠️ New User</h3>
+        <p>Email lift: <strong>+-2.5pp</strong></p>
+        <p>Emails sent: 1,178</p>
+        <p class="big-number" style="color:#e74c3c">$59 wasted</p>
+    </div><div class="card alert-red">
+        <h3>⚠️ Inactive</h3>
+        <p>Email lift: <strong>+1.1pp</strong></p>
+        <p>Emails sent: 1,206</p>
+        <p class="big-number" style="color:#e74c3c">$60 wasted</p>
+    </div></div>
+</div>
+
+<!-- Under-Targeting -->
+<div class="section">
+<h2>🟢 Under-Targeting Opportunity — Hidden Revenue</h2>
+<p style="color:#888;margin-bottom:15px;">These segments respond strongly to email. Emailing them more = highest ROI opportunity.</p>
+<div class="cards-grid"><div class="card alert-green">
+        <h3>💰 Inactive</h3>
+        <p>Email lift: <strong>+1.1pp</strong></p>
+        <p>Not emailed: 400 users</p>
+        <p class="big-number" style="color:#00b894">$509 opportunity</p>
+    </div></div>
+</div>
+
+<!-- Campaign Ranking -->
+<div class="section">
+<h2>🏆 Campaign Ranking</h2>
+<table>
+    <tr><th>Campaign</th><th>Open Rate</th><th>Click Rate</th><th>Conv Rate</th><th>Revenue</th><th>ROI</th></tr>
+    <tr>
+        <td>Summer Sale</td>
+        <td>49.2%</td>
+        <td>36.9%</td>
+        <td>60.6%</td>
+        <td>$36,671</td>
+        <td>82960.5%</td>
+    </tr><tr>
+        <td>New Arrival</td>
+        <td>41.4%</td>
+        <td>41.9%</td>
+        <td>56.1%</td>
+        <td>$35,432</td>
+        <td>82976.7%</td>
+    </tr><tr>
+        <td>Weekend Special</td>
+        <td>40.9%</td>
+        <td>42.9%</td>
+        <td>53.0%</td>
+        <td>$34,965</td>
+        <td>82364.2%</td>
+    </tr><tr>
+        <td>Loyalty Reward</td>
+        <td>42.3%</td>
+        <td>44.7%</td>
+        <td>58.5%</td>
+        <td>$33,802</td>
+        <td>80188.9%</td>
+    </tr><tr>
+        <td>Flash Deal</td>
+        <td>51.6%</td>
+        <td>35.4%</td>
+        <td>55.8%</td>
+        <td>$33,702</td>
+        <td>79858.3%</td>
+    </tr><tr>
+        <td>Welcome Series</td>
+        <td>45.1%</td>
+        <td>41.1%</td>
+        <td>53.1%</td>
+        <td>$32,164</td>
+        <td>81019.7%</td>
+    </tr><tr>
+        <td>Win-Back</td>
+        <td>47.9%</td>
+        <td>37.7%</td>
+        <td>53.7%</td>
+        <td>$31,971</td>
+        <td>71183.5%</td>
+    </tr>
+</table>
+</div>
+
+<!-- Targeting Matrix -->
+<div class="section">
+<h2>🎯 Targeting Matrix — Who to Email More / Less / Stop</h2>
+<table>
+    <tr><th>Segment</th><th>No Email Rate</th><th>Email Rate</th><th>Lift</th><th>Action</th></tr>
+    <tr>
+        <td>Frequent Buyer</td>
+        <td>60.0%</td>
+        <td>54.8%</td>
+        <td>+-5.1pp</td>
+        <td><span class="badge" style="background:#e74c3c">STOP</span></td>
+    </tr><tr>
+        <td>Inactive</td>
+        <td>5.2%</td>
+        <td>6.4%</td>
+        <td>+1.1pp</td>
+        <td><span class="badge" style="background:#e67e22">REDUCE</span></td>
+    </tr><tr>
+        <td>New User</td>
+        <td>10.0%</td>
+        <td>7.5%</td>
+        <td>+-2.5pp</td>
+        <td><span class="badge" style="background:#e74c3c">STOP</span></td>
+    </tr><tr>
+        <td>Regular</td>
+        <td>15.9%</td>
+        <td>9.1%</td>
+        <td>+-6.8pp</td>
+        <td><span class="badge" style="background:#e74c3c">STOP</span></td>
+    </tr><tr>
+        <td>VIP</td>
+        <td>60.3%</td>
+        <td>52.9%</td>
+        <td>+-7.4pp</td>
+        <td><span class="badge" style="background:#e74c3c">STOP</span></td>
+    </tr>
+</table>
+</div>
+
+<!-- Segment Deep Dive -->
+<div class="section">
+<h2>🔍 Segment Deep Dive</h2>
+<div class="cards-grid"><div class="card">
+        <h3>New User</h3>
+        <p>Users: 1,548 | Email Rate: 76%</p>
+        <p>Purchase Rate: 8.1% | Lift: -2.5pp</p>
+        <p>Revenue: $13761.33</p>
+        <p><strong>REDUCE / STOP emailing</strong></p>
+    </div><div class="card">
+        <h3>VIP</h3>
+        <p>Users: 1,605 | Email Rate: 74%</p>
+        <p>Purchase Rate: 54.8% | Lift: -7.4pp</p>
+        <p>Revenue: $96860.72</p>
+        <p><strong>REDUCE / STOP emailing</strong></p>
+    </div><div class="card">
+        <h3>Frequent Buyer</h3>
+        <p>Users: 1,579 | Email Rate: 74%</p>
+        <p>Purchase Rate: 56.2% | Lift: -5.1pp</p>
+        <p>Revenue: $98104.74</p>
+        <p><strong>REDUCE / STOP emailing</strong></p>
+    </div><div class="card">
+        <h3>Regular</h3>
+        <p>Users: 1,662 | Email Rate: 73%</p>
+        <p>Purchase Rate: 11.0% | Lift: -6.8pp</p>
+        <p>Revenue: $18501.48</p>
+        <p><strong>REDUCE / STOP emailing</strong></p>
+    </div><div class="card">
+        <h3>Inactive</h3>
+        <p>Users: 1,606 | Email Rate: 75%</p>
+        <p>Purchase Rate: 6.1% | Lift: 1.1pp</p>
+        <p>Revenue: $11478.68</p>
+        <p><strong>REDUCE / STOP emailing</strong></p>
+    </div></div>
+</div>
+
+<!-- ROI Improvement -->
+<div class="section">
+<h2>💰 ROI Improvement Estimate</h2>
+<div class="roi-box">
+    <div style="color:#888;margin-bottom:5px;">ESTIMATED NET ROI IMPROVEMENT</div>
+    <div class="roi-value">$718</div>
+    <div style="margin-top:15px; display:flex; justify-content:center; gap:40px;">
+        <div><span style="color:#e74c3c;font-size:1.3em;font-weight:700;">$209</span><br><span style="color:#888;">Savings (reduce over-targeting)</span></div>
+        <div><span style="color:#00b894;font-size:1.3em;font-weight:700;">$509</span><br><span style="color:#888;">Revenue gain (email under-targeted)</span></div>
+    </div>
+</div>
+</div>
+
+<!-- Key Insights -->
+<div class="section">
+<h2>💡 Key Insights</h2>
+<div class="insight-card">
+    <h3>Biggest Waste</h3>
+    <p>VIP segment — emailing users who buy anyway. Costing <strong>$298</strong> with minimal impact on purchase rates.</p>
+</div>
+<div class="insight-card">
+    <h3>Biggest Opportunity</h3>
+    <p>Inactive segment — these users respond strongly to email (+1.1pp lift) but many aren't being emailed. Missing <strong>$509</strong> in potential revenue.</p>
+</div>
+<div class="insight-card">
+    <h3>The Core Problem</h3>
+    <p>The company is over-emailing its best customers (who don't need convincing) and under-emailing persuadable segments (who respond strongly). Reallocating email volume = immediate ROI improvement.</p>
+</div>
+</div>
+
+<div class="footer">
+    Email Campaign Targeting Analysis | Generated 2026-03-31 | 8,000 records analyzed
+</div>
+
+</div>
+</body>
+</html>
