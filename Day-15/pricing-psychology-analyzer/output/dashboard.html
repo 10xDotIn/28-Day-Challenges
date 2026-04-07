@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pricing Psychology Analyzer</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { background: #0f0f0f; color: #e0e0e0; font-family: 'Segoe UI', system-ui, sans-serif; padding: 20px; }
+.container { max-width: 1400px; margin: 0 auto; }
+h1 { text-align: center; font-size: 2.2em; margin-bottom: 5px; background: linear-gradient(90deg, #00e5ff, #bb86fc); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.subtitle { text-align: center; color: #888; margin-bottom: 30px; font-size: 1.1em; }
+.hero { display: grid; grid-template-columns: repeat(5, 1fr); gap: 15px; margin-bottom: 30px; }
+.hero-card { background: #1a1a2e; border-radius: 12px; padding: 20px; text-align: center; border: 1px solid #2a2a3e; }
+.hero-card .value { font-size: 1.8em; font-weight: 700; margin: 5px 0; }
+.hero-card .label { color: #888; font-size: 0.85em; text-transform: uppercase; letter-spacing: 1px; }
+.section { background: #1a1a2e; border-radius: 12px; padding: 25px; margin-bottom: 25px; border: 1px solid #2a2a3e; }
+.section h2 { font-size: 1.4em; margin-bottom: 15px; color: #bb86fc; }
+.section h3 { font-size: 1.1em; margin: 15px 0 10px; color: #00e5ff; }
+.chart-container { position: relative; width: 100%; }
+.chart-tall { height: 450px; }
+.chart-medium { height: 380px; }
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 25px; }
+.heatmap-table { width: 100%; border-collapse: collapse; font-size: 0.9em; }
+.heatmap-table th { padding: 10px; background: #0f0f0f; color: #bb86fc; font-weight: 600; text-align: center; }
+.heatmap-table td { padding: 8px; text-align: center; font-weight: 600; border: 1px solid #2a2a3e; }
+.rec-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; }
+.rec-card { border-radius: 10px; padding: 18px; }
+.rec-card h4 { margin-bottom: 10px; font-size: 1.1em; }
+.rec-card ul { list-style: none; padding: 0; }
+.rec-card ul li { padding: 4px 0; font-size: 0.95em; }
+.rec-scale { background: rgba(0,230,118,0.1); border: 1px solid #00e676; }
+.rec-scale h4 { color: #00e676; }
+.rec-careful { background: rgba(255,214,0,0.1); border: 1px solid #ffd600; }
+.rec-careful h4 { color: #ffd600; }
+.rec-targeted { background: rgba(255,145,0,0.1); border: 1px solid #ff9100; }
+.rec-targeted h4 { color: #ff9100; }
+.rec-avoid { background: rgba(255,82,82,0.1); border: 1px solid #ff5252; }
+.rec-avoid h4 { color: #ff5252; }
+.insights-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 15px; }
+.insight-card { background: #0f0f0f; border-radius: 10px; padding: 18px; border-left: 4px solid; }
+.insight-card .ins-title { font-size: 0.8em; text-transform: uppercase; letter-spacing: 1px; color: #888; margin-bottom: 5px; }
+.insight-card .ins-value { font-size: 1.4em; font-weight: 700; margin-bottom: 5px; }
+.insight-card .ins-detail { font-size: 0.82em; color: #aaa; }
+@media (max-width: 900px) {
+    .hero { grid-template-columns: repeat(2, 1fr); }
+    .grid-2 { grid-template-columns: 1fr; }
+    .rec-grid { grid-template-columns: repeat(2, 1fr); }
+    .insights-grid { grid-template-columns: repeat(2, 1fr); }
+}
+</style>
+</head>
+<body>
+<div class="container">
+<h1>Pricing Psychology Analyzer</h1>
+<p class="subtitle">Analyzing 12,000 pricing events across 10 strategies, 5 segments, 4 categories</p>
+
+<!-- Hero Cards -->
+<div class="hero">
+    <div class="hero-card"><div class="label">Total Users</div><div class="value" style="color:#00e5ff">12,000</div></div>
+    <div class="hero-card"><div class="label">Conversion Rate</div><div class="value" style="color:#00e676">33.2%</div></div>
+    <div class="hero-card"><div class="label">Avg Revenue</div><div class="value" style="color:#bb86fc">₹297</div></div>
+    <div class="hero-card"><div class="label">Return Rate</div><div class="value" style="color:#ff5252">18.1%</div></div>
+    <div class="hero-card"><div class="label">Repeat Rate</div><div class="value" style="color:#ffd600">18.3%</div></div>
+</div>
+
+<!-- Strategy Battle -->
+<div class="section">
+    <h2>Strategy Battle — Conversion Rate Ranking</h2>
+    <div class="chart-container chart-tall"><canvas id="battleChart"></canvas></div>
+</div>
+
+<!-- Regret + Long Game side by side -->
+<div class="grid-2">
+    <div class="section">
+        <h2>The Regret Chart — Conversion vs Returns</h2>
+        <div class="chart-container chart-medium"><canvas id="regretChart"></canvas></div>
+    </div>
+    <div class="section">
+        <h2>The Long Game — Conversion vs Repeat</h2>
+        <div class="chart-container chart-medium"><canvas id="longChart"></canvas></div>
+    </div>
+</div>
+
+<!-- Segment Heatmap -->
+<div class="section">
+    <h2>Segment × Strategy Heatmap — Conversion Rate (%)</h2>
+    <table class="heatmap-table" id="segHeatmap"></table>
+</div>
+
+<!-- Psychology Breakdown -->
+<div class="section">
+    <h2>Psychology Breakdown — Effectiveness Score</h2>
+    <div class="chart-container chart-tall"><canvas id="psychChart"></canvas></div>
+</div>
+
+<!-- Category Matrix -->
+<div class="section">
+    <h2>Category Intelligence — Best Strategy per Category</h2>
+    <table class="heatmap-table" id="catHeatmap"></table>
+</div>
+
+<!-- Power Ranking -->
+<div class="section">
+    <h2>Pricing Power Ranking — Master Composite Score</h2>
+    <div class="chart-container chart-tall"><canvas id="powerChart"></canvas></div>
+</div>
+
+<!-- Strategy Board -->
+<div class="section">
+    <h2>Strategy Board — Recommendations</h2>
+    <div class="rec-grid">
+        <div class="rec-card rec-scale">
+            <h4>✅ SCALE</h4>
+            <ul><li>Anchor High</li></ul>
+        </div>
+        <div class="rec-card rec-careful">
+            <h4>⚠️ USE CAREFULLY</h4>
+            <ul><li>Free Ship</li><li>Bundle</li><li>Charm</li><li>Decoy</li></ul>
+        </div>
+        <div class="rec-card rec-targeted">
+            <h4>🎯 TARGETED ONLY</h4>
+            <ul><li>Odd Specific</li><li>Urgency</li><li>Prestige</li></ul>
+        </div>
+        <div class="rec-card rec-avoid">
+            <h4>🚫 AVOID</h4>
+            <ul><li>Round</li><li>Anchor Low</li></ul>
+        </div>
+    </div>
+</div>
+
+<!-- Key Insights -->
+<div class="section">
+    <h2>Key Insights</h2>
+    <div class="insights-grid">
+        <div class="insight-card" style="border-color:#00e676">
+            <div class="ins-title">Best Strategy Overall</div>
+            <div class="ins-value" style="color:#00e676">Anchor High</div>
+            <div class="ins-detail">Power Score: 0.69 — balances all metrics</div>
+        </div><div class="insight-card" style="border-color:#ff5252">
+            <div class="ins-title">Most Dangerous Strategy</div>
+            <div class="ins-value" style="color:#ff5252">Urgency</div>
+            <div class="ins-detail">Return rate: 30.9% — converts but destroys trust</div>
+        </div><div class="insight-card" style="border-color:#ffd600">
+            <div class="ins-title">Biggest Missed Opportunity</div>
+            <div class="ins-value" style="color:#ffd600">Prestige</div>
+            <div class="ins-detail">High satisfaction + repeat but under-optimized for conversion</div>
+        </div><div class="insight-card" style="border-color:#00e5ff">
+            <div class="ins-title">Total Revenue Analyzed</div>
+            <div class="ins-value" style="color:#00e5ff">₹3,569,021</div>
+            <div class="ins-detail">12,000 pricing events across 10 strategies</div>
+        </div><div class="insight-card" style="border-color:#ff9100">
+            <div class="ins-title">Revenue at Risk from Returns</div>
+            <div class="ins-value" style="color:#ff9100">₹637,201</div>
+            <div class="ins-detail">18.1% of purchases returned — mostly from urgency tactics</div>
+        </div>
+    </div>
+</div>
+</div>
+
+<script>
+Chart.defaults.color = '#e0e0e0';
+Chart.defaults.borderColor = '#2a2a3e';
+
+const recMap = {"Anchor High": "SCALE", "Free Ship": "USE CAREFULLY", "Bundle": "USE CAREFULLY", "Charm": "USE CAREFULLY", "Decoy": "USE CAREFULLY", "Odd Specific": "TARGETED ONLY", "Urgency": "TARGETED ONLY", "Prestige": "TARGETED ONLY", "Round": "AVOID", "Anchor Low": "AVOID"};
+function recColor(name) {
+    const r = recMap[name];
+    if (r === 'SCALE') return '#00e676';
+    if (r === 'USE CAREFULLY') return '#ffd600';
+    if (r === 'TARGETED ONLY') return '#ff9100';
+    return '#ff5252';
+}
+
+// Strategy Battle
+const battleData = [{"name": "Urgency", "conv": 55.3}, {"name": "Anchor High", "conv": 51.2}, {"name": "Bundle", "conv": 41.8}, {"name": "Decoy", "conv": 40.9}, {"name": "Charm", "conv": 40.8}, {"name": "Free Ship", "conv": 36.9}, {"name": "Odd Specific", "conv": 27.8}, {"name": "Round", "conv": 18.2}, {"name": "Anchor Low", "conv": 11.4}, {"name": "Prestige", "conv": 7.6}];
+new Chart(document.getElementById('battleChart'), {
+    type: 'bar',
+    data: {
+        labels: battleData.map(d => d.name),
+        datasets: [{ data: battleData.map(d => d.conv), backgroundColor: battleData.map(d => recColor(d.name)), borderRadius: 6 }]
+    },
+    options: {
+        indexAxis: 'y', responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => ctx.raw.toFixed(1) + '%' } } },
+        scales: { x: { title: { display: true, text: 'Conversion Rate (%)' }, grid: { color: '#2a2a3e' } }, y: { grid: { display: false } } }
+    }
+});
+
+// Regret Chart
+const regretData = [{"name": "Urgency", "conv": 55.3, "ret": 30.9}, {"name": "Anchor High", "conv": 51.2, "ret": 16.7}, {"name": "Bundle", "conv": 41.8, "ret": 22.4}, {"name": "Decoy", "conv": 40.9, "ret": 15.0}, {"name": "Charm", "conv": 40.8, "ret": 14.0}, {"name": "Free Ship", "conv": 36.9, "ret": 21.1}, {"name": "Odd Specific", "conv": 27.8, "ret": 9.3}, {"name": "Round", "conv": 18.2, "ret": 5.7}, {"name": "Anchor Low", "conv": 11.4, "ret": 12.4}, {"name": "Prestige", "conv": 7.6, "ret": 3.2}];
+new Chart(document.getElementById('regretChart'), {
+    type: 'bar',
+    data: {
+        labels: regretData.map(d => d.name),
+        datasets: [
+            { label: 'Conversion %', data: regretData.map(d => d.conv), backgroundColor: '#00e5ff', borderRadius: 4 },
+            { label: 'Return %', data: regretData.map(d => d.ret), backgroundColor: '#ff5252', borderRadius: 4 }
+        ]
+    },
+    options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { position: 'top' } },
+        scales: { x: { grid: { display: false } }, y: { title: { display: true, text: 'Rate (%)' }, grid: { color: '#2a2a3e' } } }
+    }
+});
+
+// Long Game - scatter
+const longData = [{"name": "Anchor High", "conv": 51.2, "rep": 17.6}, {"name": "Bundle", "conv": 41.8, "rep": 21.4}, {"name": "Odd Specific", "conv": 27.8, "rep": 26.5}, {"name": "Charm", "conv": 40.8, "rep": 18.2}, {"name": "Free Ship", "conv": 36.9, "rep": 21.5}, {"name": "Decoy", "conv": 40.9, "rep": 13.6}, {"name": "Round", "conv": 18.2, "rep": 22.3}, {"name": "Urgency", "conv": 55.3, "rep": 8.4}, {"name": "Prestige", "conv": 7.6, "rep": 39.8}, {"name": "Anchor Low", "conv": 11.4, "rep": 24.8}];
+new Chart(document.getElementById('longChart'), {
+    type: 'scatter',
+    data: {
+        datasets: [{
+            data: longData.map(d => ({ x: d.conv, y: d.rep })),
+            backgroundColor: longData.map(d => recColor(d.name)),
+            pointRadius: 10, pointHoverRadius: 14
+        }]
+    },
+    options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: {
+            legend: { display: false },
+            tooltip: { callbacks: { label: (ctx) => longData[ctx.dataIndex].name + ' — Conv: ' + ctx.raw.x + '%, Repeat: ' + ctx.raw.y + '%' } }
+        },
+        scales: {
+            x: { title: { display: true, text: 'Conversion Rate (%)' }, grid: { color: '#2a2a3e' } },
+            y: { title: { display: true, text: 'Repeat Purchase Rate (%)' }, grid: { color: '#2a2a3e' } }
+        }
+    }
+});
+
+// Segment Heatmap Table
+const segData = [{"segment": "Brand Loyal", "strategy": "Anchor High", "value": 51.3}, {"segment": "Brand Loyal", "strategy": "Anchor Low", "value": 18.5}, {"segment": "Brand Loyal", "strategy": "Bundle", "value": 42.7}, {"segment": "Brand Loyal", "strategy": "Charm", "value": 41.2}, {"segment": "Brand Loyal", "strategy": "Decoy", "value": 50.6}, {"segment": "Brand Loyal", "strategy": "Free Ship", "value": 41.2}, {"segment": "Brand Loyal", "strategy": "Odd Specific", "value": 35.0}, {"segment": "Brand Loyal", "strategy": "Prestige", "value": 19.3}, {"segment": "Brand Loyal", "strategy": "Round", "value": 22.6}, {"segment": "Brand Loyal", "strategy": "Urgency", "value": 57.5}, {"segment": "First Time Buyer", "strategy": "Anchor High", "value": 40.4}, {"segment": "First Time Buyer", "strategy": "Anchor Low", "value": 8.0}, {"segment": "First Time Buyer", "strategy": "Bundle", "value": 46.6}, {"segment": "First Time Buyer", "strategy": "Charm", "value": 31.6}, {"segment": "First Time Buyer", "strategy": "Decoy", "value": 37.2}, {"segment": "First Time Buyer", "strategy": "Free Ship", "value": 42.4}, {"segment": "First Time Buyer", "strategy": "Odd Specific", "value": 24.0}, {"segment": "First Time Buyer", "strategy": "Prestige", "value": 2.7}, {"segment": "First Time Buyer", "strategy": "Round", "value": 16.4}, {"segment": "First Time Buyer", "strategy": "Urgency", "value": 52.9}, {"segment": "Impulse Buyer", "strategy": "Anchor High", "value": 59.4}, {"segment": "Impulse Buyer", "strategy": "Anchor Low", "value": 16.9}, {"segment": "Impulse Buyer", "strategy": "Bundle", "value": 48.8}, {"segment": "Impulse Buyer", "strategy": "Charm", "value": 46.1}, {"segment": "Impulse Buyer", "strategy": "Decoy", "value": 47.2}, {"segment": "Impulse Buyer", "strategy": "Free Ship", "value": 43.6}, {"segment": "Impulse Buyer", "strategy": "Odd Specific", "value": 34.2}, {"segment": "Impulse Buyer", "strategy": "Prestige", "value": 12.9}, {"segment": "Impulse Buyer", "strategy": "Round", "value": 27.0}, {"segment": "Impulse Buyer", "strategy": "Urgency", "value": 70.3}, {"segment": "Price Sensitive", "strategy": "Anchor High", "value": 55.4}, {"segment": "Price Sensitive", "strategy": "Anchor Low", "value": 7.3}, {"segment": "Price Sensitive", "strategy": "Bundle", "value": 33.9}, {"segment": "Price Sensitive", "strategy": "Charm", "value": 48.4}, {"segment": "Price Sensitive", "strategy": "Decoy", "value": 34.1}, {"segment": "Price Sensitive", "strategy": "Free Ship", "value": 31.0}, {"segment": "Price Sensitive", "strategy": "Odd Specific", "value": 19.3}, {"segment": "Price Sensitive", "strategy": "Prestige", "value": 2.3}, {"segment": "Price Sensitive", "strategy": "Round", "value": 10.5}, {"segment": "Price Sensitive", "strategy": "Urgency", "value": 55.4}, {"segment": "Research Heavy", "strategy": "Anchor High", "value": 43.7}, {"segment": "Research Heavy", "strategy": "Anchor Low", "value": 6.0}, {"segment": "Research Heavy", "strategy": "Bundle", "value": 40.5}, {"segment": "Research Heavy", "strategy": "Charm", "value": 24.7}, {"segment": "Research Heavy", "strategy": "Decoy", "value": 37.9}, {"segment": "Research Heavy", "strategy": "Free Ship", "value": 29.2}, {"segment": "Research Heavy", "strategy": "Odd Specific", "value": 31.0}, {"segment": "Research Heavy", "strategy": "Prestige", "value": 0.5}, {"segment": "Research Heavy", "strategy": "Round", "value": 18.4}, {"segment": "Research Heavy", "strategy": "Urgency", "value": 32.7}];
+const segments = [...new Set(segData.map(d => d.segment))];
+const strategies = [...new Set(segData.map(d => d.strategy))];
+let segHtml = '<tr><th></th>' + strategies.map(s => '<th>' + s + '</th>').join('') + '</tr>';
+segments.forEach(seg => {
+    segHtml += '<tr><th style="text-align:left">' + seg + '</th>';
+    strategies.forEach(st => {
+        const val = segData.find(d => d.segment === seg && d.strategy === st)?.value || 0;
+        const intensity = Math.min(val / 65, 1);
+        const bg = `rgba(0,229,255,${(intensity * 0.6 + 0.05).toFixed(2)})`;
+        segHtml += `<td style="background:${bg};color:#fff">${val.toFixed(1)}%</td>`;
+    });
+    segHtml += '</tr>';
+});
+document.getElementById('segHeatmap').innerHTML = segHtml;
+
+// Category Heatmap Table
+const catData = [{"category": "Beauty", "strategy": "Anchor High", "value": 51.5}, {"category": "Beauty", "strategy": "Anchor Low", "value": 13.0}, {"category": "Beauty", "strategy": "Bundle", "value": 43.2}, {"category": "Beauty", "strategy": "Charm", "value": 38.9}, {"category": "Beauty", "strategy": "Decoy", "value": 43.0}, {"category": "Beauty", "strategy": "Free Ship", "value": 37.5}, {"category": "Beauty", "strategy": "Odd Specific", "value": 24.6}, {"category": "Beauty", "strategy": "Prestige", "value": 9.3}, {"category": "Beauty", "strategy": "Round", "value": 18.2}, {"category": "Beauty", "strategy": "Urgency", "value": 53.6}, {"category": "Electronics", "strategy": "Anchor High", "value": 54.3}, {"category": "Electronics", "strategy": "Anchor Low", "value": 9.4}, {"category": "Electronics", "strategy": "Bundle", "value": 44.5}, {"category": "Electronics", "strategy": "Charm", "value": 34.9}, {"category": "Electronics", "strategy": "Decoy", "value": 40.3}, {"category": "Electronics", "strategy": "Free Ship", "value": 32.0}, {"category": "Electronics", "strategy": "Odd Specific", "value": 26.7}, {"category": "Electronics", "strategy": "Prestige", "value": 8.4}, {"category": "Electronics", "strategy": "Round", "value": 16.5}, {"category": "Electronics", "strategy": "Urgency", "value": 52.9}, {"category": "Fashion", "strategy": "Anchor High", "value": 47.7}, {"category": "Fashion", "strategy": "Anchor Low", "value": 12.6}, {"category": "Fashion", "strategy": "Bundle", "value": 38.6}, {"category": "Fashion", "strategy": "Charm", "value": 41.3}, {"category": "Fashion", "strategy": "Decoy", "value": 41.0}, {"category": "Fashion", "strategy": "Free Ship", "value": 37.5}, {"category": "Fashion", "strategy": "Odd Specific", "value": 31.4}, {"category": "Fashion", "strategy": "Prestige", "value": 8.4}, {"category": "Fashion", "strategy": "Round", "value": 18.7}, {"category": "Fashion", "strategy": "Urgency", "value": 55.9}, {"category": "Health", "strategy": "Anchor High", "value": 51.5}, {"category": "Health", "strategy": "Anchor Low", "value": 10.8}, {"category": "Health", "strategy": "Bundle", "value": 40.7}, {"category": "Health", "strategy": "Charm", "value": 48.3}, {"category": "Health", "strategy": "Decoy", "value": 38.9}, {"category": "Health", "strategy": "Free Ship", "value": 40.2}, {"category": "Health", "strategy": "Odd Specific", "value": 28.5}, {"category": "Health", "strategy": "Prestige", "value": 4.3}, {"category": "Health", "strategy": "Round", "value": 19.1}, {"category": "Health", "strategy": "Urgency", "value": 58.9}];
+const categories = [...new Set(catData.map(d => d.category))];
+const catStrategies = [...new Set(catData.map(d => d.strategy))];
+let catHtml = '<tr><th></th>' + catStrategies.map(s => '<th>' + s + '</th>').join('') + '</tr>';
+categories.forEach(cat => {
+    catHtml += '<tr><th style="text-align:left">' + cat + '</th>';
+    catStrategies.forEach(st => {
+        const val = catData.find(d => d.category === cat && d.strategy === st)?.value || 0;
+        const intensity = Math.min(val / 65, 1);
+        const bg = `rgba(187,134,252,${(intensity * 0.6 + 0.05).toFixed(2)})`;
+        catHtml += `<td style="background:${bg};color:#fff">${val.toFixed(1)}%</td>`;
+    });
+    catHtml += '</tr>';
+});
+document.getElementById('catHeatmap').innerHTML = catHtml;
+
+// Psychology Breakdown
+const psychData = [{"name": "Anchoring (High)", "strategy": "Anchor High", "eff": 32.6}, {"name": "Left-Digit Effect", "strategy": "Charm", "eff": 26.9}, {"name": "Decoy Effect", "strategy": "Decoy", "eff": 24.7}, {"name": "Bundle Illusion", "strategy": "Bundle", "eff": 23.6}, {"name": "Scarcity/Urgency", "strategy": "Urgency", "eff": 23.4}, {"name": "Threshold Nudge", "strategy": "Free Ship", "eff": 20.8}, {"name": "Precision Trust", "strategy": "Odd Specific", "eff": 18.1}, {"name": "Round Number", "strategy": "Round", "eff": 12.9}, {"name": "Anchoring (Low)", "strategy": "Anchor Low", "eff": 7.1}, {"name": "Prestige Signal", "strategy": "Prestige", "eff": 6.3}];
+new Chart(document.getElementById('psychChart'), {
+    type: 'bar',
+    data: {
+        labels: psychData.map(d => d.name),
+        datasets: [{ data: psychData.map(d => d.eff), backgroundColor: psychData.map(d => recColor(d.strategy)), borderRadius: 6 }]
+    },
+    options: {
+        indexAxis: 'y', responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => ctx.raw.toFixed(1) + '%' } } },
+        scales: { x: { title: { display: true, text: 'Effectiveness Score (%)' }, grid: { color: '#2a2a3e' } }, y: { grid: { display: false } } }
+    }
+});
+
+// Power Ranking - stacked horizontal
+const powerData = [{"name": "Anchor High", "conv": 27.42, "rev": 21.97, "rep": 7.31, "sat": 12.31, "total": 69.0}, {"name": "Bundle", "conv": 21.49, "rev": 20.98, "rep": 10.4, "sat": 9.36, "total": 62.2}, {"name": "Free Ship", "conv": 18.41, "rev": 25.0, "rep": 10.46, "sat": 8.27, "total": 62.1}, {"name": "Charm", "conv": 20.88, "rev": 17.11, "rep": 7.84, "sat": 12.4, "total": 58.2}, {"name": "Decoy", "conv": 20.9, "rev": 18.57, "rep": 4.14, "sat": 8.12, "total": 51.7}, {"name": "Odd Specific", "conv": 12.69, "rev": 11.51, "rep": 14.47, "sat": 8.69, "total": 47.4}, {"name": "Urgency", "conv": 30.0, "rev": 16.41, "rep": 0.0, "sat": 0.0, "total": 46.4}, {"name": "Prestige", "conv": 0.0, "rev": 0.0, "rep": 25.0, "sat": 20.0, "total": 45.0}, {"name": "Round", "conv": 6.64, "rev": 3.89, "rep": 11.07, "sat": 11.18, "total": 32.8}, {"name": "Anchor Low", "conv": 2.38, "rev": 0.23, "rep": 13.09, "sat": 8.26, "total": 24.0}];
+new Chart(document.getElementById('powerChart'), {
+    type: 'bar',
+    data: {
+        labels: powerData.map(d => d.name),
+        datasets: [
+            { label: 'Conversion (30%)', data: powerData.map(d => d.conv), backgroundColor: '#00e5ff', borderRadius: 0 },
+            { label: 'Net Revenue (25%)', data: powerData.map(d => d.rev), backgroundColor: '#00e676', borderRadius: 0 },
+            { label: 'Repeat (25%)', data: powerData.map(d => d.rep), backgroundColor: '#bb86fc', borderRadius: 0 },
+            { label: 'Satisfaction (20%)', data: powerData.map(d => d.sat), backgroundColor: '#ffd600', borderRadius: 4 }
+        ]
+    },
+    options: {
+        indexAxis: 'y', responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { position: 'bottom' }, tooltip: { mode: 'index' } },
+        scales: { x: { stacked: true, title: { display: true, text: 'Composite Score' }, grid: { color: '#2a2a3e' } }, y: { stacked: true, grid: { display: false } } }
+    }
+});
+</script>
+</body>
+</html>
