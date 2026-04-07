@@ -43,20 +43,20 @@ Every day = **1 Live Project**. After the live session, all project files are pu
 | Day | Project | Status |
 |-----|---------|--------|
 | Day 1 | Adidas Sales Analysis | Completed |
-| Day 2 | Coming Soon | Upcoming |
+| Day 2 | Airbnb Analysis with Dashboard | Completed |
 | Day 3 | Coming Soon | Upcoming |
-| Day 4 | Coming Soon | Upcoming |
-| Day 5 | Coming Soon | Upcoming |
-| Day 6 | Coming Soon | Upcoming |
-| Day 7 | Coming Soon | Upcoming |
-| Day 8 | Coming Soon | Upcoming |
-| Day 9 | Coming Soon | Upcoming |
-| Day 10 | Coming Soon | Upcoming |
-| Day 11 | Coming Soon | Upcoming |
-| Day 12 | Coming Soon | Upcoming |
-| Day 13 | Coming Soon | Upcoming |
-| Day 14 | Coming Soon | Upcoming |
-| Day 15 | Coming Soon | Upcoming |
+| Day 4 | 10x-Analyst Plugin — Agentic Analysis Swarm | Completed |
+| Day 5 | 10x Content Intel - specialized agents to analyze media and content | Completed |
+| Day 6 | Product Image QA + Computer Vision Analyzer | Completed |
+| Day 7 | Product Photo Analyzer: Amazon vs eBay  | Completed |
+| Day 8 | Real-Time Object Detection | Completed |
+| Day 9 | Hotel Review Sentiment Analyzer | Completed |
+| Day 10 | Fake Review Detector | Completed |
+| Day 11 | Product Search Ranking Analyzer | Completed |
+| Day 12 | Email Campaign Targeting Analyzer | Completed |
+| Day 13 | Customer Targeting Efficiency in Bank Marketing Campaigns | Completed |
+| Day 14 | Feature Impact Analytics  | Completed |
+| Day 15 | Pricing Psychology Analyzer | Completed |
 | Day 16 | Coming Soon | Upcoming |
 | Day 17 | Coming Soon | Upcoming |
 | Day 18 | Coming Soon | Upcoming |
