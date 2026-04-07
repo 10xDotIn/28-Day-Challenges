@@ -1,0 +1,26 @@
+sku,product_name,category,current_price_usd,cost_usd,inventory_qty,weight_g,status,created_at
+CB-001,Ethiopian Yirgacheffe Single Origin,Coffee Beans,18.99,6.2,340,454,active,2025-06-15
+CB-002,Colombian Supremo Blend,Coffee Beans,16.99,5.5,420,454,active,2025-06-15
+CB-003,Sumatra Mandheling Dark Roast,Coffee Beans,17.99,5.8,280,454,active,2025-06-15
+CB-004,Kenya AA Single Origin,Coffee Beans,19.99,7.1,195,454,active,2025-06-15
+CB-005,NovaBrew House Blend (1lb),Coffee Beans,14.99,4.2,510,454,active,2025-06-15
+CB-006,Espresso Roast Whole Bean,Coffee Beans,17.49,5.6,310,454,active,2025-06-15
+CB-007,Decaf Colombian Swiss Water,Coffee Beans,16.99,6.0,175,454,active,2025-06-15
+CB-008,Limited Edition Guatemala Antigua,Coffee Beans,24.99,9.5,85,340,active,2025-06-15
+EQ-001,Ceramic Pour-Over Dripper,Brewing Equipment,34.99,11.0,120,680,active,2025-06-15
+EQ-002,Stainless Steel French Press (34oz),Brewing Equipment,44.99,14.5,95,910,active,2025-06-15
+EQ-003,Glass Cold Brew Maker (1.5L),Brewing Equipment,39.99,12.0,80,1100,active,2025-06-15
+EQ-004,Manual Ceramic Burr Grinder,Brewing Equipment,54.99,18.0,65,750,active,2025-06-15
+EQ-005,Electric Gooseneck Kettle (1.2L),Brewing Equipment,69.99,24.0,45,980,active,2025-06-15
+EQ-006,AeroPress Original Kit,Brewing Equipment,39.99,16.0,110,500,active,2025-06-15
+AC-001,NovaBrew Ceramic Mug (12oz),Accessories,14.99,4.0,450,340,active,2025-06-15
+AC-002,Insulated Travel Tumbler (16oz),Accessories,24.99,8.0,280,310,active,2025-06-15
+AC-003,Reusable Stainless Steel Filter,Accessories,12.99,3.5,320,85,active,2025-06-15
+AC-004,Precision Coffee Scale with Timer,Accessories,29.99,10.0,140,250,active,2025-06-15
+AC-005,NovaBrew Canvas Tote Bag,Accessories,19.99,5.5,200,280,active,2025-06-15
+AC-006,Bamboo Stir Stick Set (12pk),Accessories,8.99,2.0,380,120,active,2025-06-15
+AC-007,Coffee Bean Storage Canister,Accessories,22.99,7.0,165,450,active,2025-06-15
+AC-008,Latte Art Pitcher (12oz),Accessories,16.99,5.0,195,280,active,2025-06-15
+SUB-001,Monthly Bean Box (2 bags),Subscriptions,32.99,11.0,999,908,active,2025-06-15
+SUB-002,Quarterly Discovery Box (6 bags + surprise),Subscriptions,89.99,30.0,999,2800,active,2025-06-15
+SUB-003,Weekly Espresso Club (500g/wk),Subscriptions,19.99,6.5,999,500,active,2025-06-15

@@ -1,0 +1,12 @@
+{
+  "name": "10x-analyst",
+  "description": "Agentic data analysis swarm — ingest, clean, profile, analyze, visualize, report, and build interactive dashboards from CSV/Excel/JSON data. A multi-agent pipeline with specialized data-engineer, statistician, visualizer, reporter, and strategist agents coordinated by an orchestrator.",
+  "version": "1.0.0",
+  "author": {
+    "name": "10x.in",
+    "url": "https://10x.in"
+  },
+  "homepage": "https://10x.in/analyst",
+  "repository": "https://github.com/10x-in/10x-analyst",
+  "license": "MIT"
+}

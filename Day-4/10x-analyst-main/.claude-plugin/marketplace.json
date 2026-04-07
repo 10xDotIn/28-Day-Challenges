@@ -1,0 +1,13 @@
+{
+  "name": "10x-analyst-marketplace",
+  "owner": {
+    "name": "10x.in"
+  },
+  "plugins": [
+    {
+      "name": "10x-analyst",
+      "source": "./",
+      "description": "Agentic data analysis swarm — ingest, clean, profile, analyze, visualize, report, and build interactive dashboards"
+    }
+  ]
+}

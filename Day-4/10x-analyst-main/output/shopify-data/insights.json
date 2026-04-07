@@ -1,0 +1,690 @@
+{
+  "generated_at": "2026-03-19",
+  "dataset": "shopify-data",
+  "summary_kpis": {
+    "total_revenue_usd": 159812.43,
+    "total_orders": 903,
+    "average_order_value_usd": 176.98,
+    "total_customers": 195,
+    "average_clv_usd": 819.55,
+    "median_clv_usd": 723.11,
+    "pct_accepts_marketing": 75.38,
+    "avg_items_per_order": 5.53,
+    "avg_line_items_per_order": 3.06,
+    "discount_usage_rate_pct": 33.33,
+    "avg_discount_amount_usd": 20.72,
+    "total_discount_given_usd": 6236.22,
+    "total_gross_profit_usd": 92242.23,
+    "overall_gross_margin_pct": 65.92
+  },
+  "revenue_orders": {
+    "monthly_trend": [
+      {
+        "month": "2025-12",
+        "revenue": 54267.45,
+        "order_count": 323,
+        "mom_pct": null
+      },
+      {
+        "month": "2026-01",
+        "revenue": 59085.63,
+        "order_count": 320,
+        "mom_pct": 8.88
+      },
+      {
+        "month": "2026-02",
+        "revenue": 46459.35,
+        "order_count": 260,
+        "mom_pct": -21.37
+      }
+    ],
+    "by_fulfillment_status": {
+      "fulfilled": {
+        "revenue": 131112.4,
+        "order_count": 735
+      },
+      "delivered": {
+        "revenue": 16379.85,
+        "order_count": 89
+      },
+      "shipped": {
+        "revenue": 12320.18,
+        "order_count": 79
+      }
+    },
+    "by_financial_status": {
+      "paid": {
+        "revenue": 159812.43,
+        "order_count": 903
+      }
+    }
+  },
+  "customer_analysis": {
+    "new_customers_per_month": {
+      "2025-09": 37,
+      "2025-10": 29,
+      "2025-11": 45,
+      "2025-12": 29,
+      "2026-01": 35,
+      "2026-02": 20
+    },
+    "acquisition_by_channel": {
+      "Organic Search": 42,
+      "Instagram Ads": 38,
+      "Referral": 32,
+      "Google Ads": 26,
+      "Email Campaign": 17,
+      "TikTok Ads": 14,
+      "Direct": 14,
+      "Facebook Ads": 12
+    },
+    "top_10_by_total_spent": [
+      {
+        "customer_id": "CUST-1143",
+        "name": "Peter Williams",
+        "total_spent_usd": 3085.95,
+        "total_orders": 15
+      },
+      {
+        "customer_id": "CUST-1113",
+        "name": "Paige Lewis",
+        "total_spent_usd": 3004.43,
+        "total_orders": 14
+      },
+      {
+        "customer_id": "CUST-1061",
+        "name": "Rohit Walker",
+        "total_spent_usd": 2879.4,
+        "total_orders": 16
+      },
+      {
+        "customer_id": "CUST-1111",
+        "name": "Megha Thakur",
+        "total_spent_usd": 2545.68,
+        "total_orders": 8
+      },
+      {
+        "customer_id": "CUST-1119",
+        "name": "Tushar Thomas",
+        "total_spent_usd": 2483.8,
+        "total_orders": 15
+      },
+      {
+        "customer_id": "CUST-1044",
+        "name": "Kavya Agarwal",
+        "total_spent_usd": 2343.14,
+        "total_orders": 8
+      },
+      {
+        "customer_id": "CUST-1054",
+        "name": "William Taylor",
+        "total_spent_usd": 2110.74,
+        "total_orders": 10
+      },
+      {
+        "customer_id": "CUST-1087",
+        "name": "Meera White",
+        "total_spent_usd": 2021.87,
+        "total_orders": 8
+      },
+      {
+        "customer_id": "CUST-1141",
+        "name": "Peter Wright",
+        "total_spent_usd": 1939.26,
+        "total_orders": 8
+      },
+      {
+        "customer_id": "CUST-1195",
+        "name": "Charlie Wright",
+        "total_spent_usd": 1890.96,
+        "total_orders": 11
+      }
+    ]
+  },
+  "product_analysis": {
+    "top_10_by_revenue": [
+      {
+        "sku": "SUB-002",
+        "product_name": "Quarterly Discovery Box (6 bags + surprise)",
+        "revenue": 21957.56,
+        "qty_sold": 244
+      },
+      {
+        "sku": "EQ-005",
+        "product_name": "Electric Gooseneck Kettle (1.2L)",
+        "revenue": 11618.34,
+        "qty_sold": 166
+      },
+      {
+        "sku": "EQ-004",
+        "product_name": "Manual Ceramic Burr Grinder",
+        "revenue": 8633.43,
+        "qty_sold": 157
+      },
+      {
+        "sku": "EQ-006",
+        "product_name": "AeroPress Original Kit",
+        "revenue": 8357.91,
+        "qty_sold": 209
+      },
+      {
+        "sku": "SUB-001",
+        "product_name": "Monthly Bean Box (2 bags)",
+        "revenue": 7983.58,
+        "qty_sold": 242
+      },
+      {
+        "sku": "EQ-001",
+        "product_name": "Ceramic Pour-Over Dripper",
+        "revenue": 6822.35,
+        "qty_sold": 265
+      },
+      {
+        "sku": "CB-008",
+        "product_name": "Limited Edition Guatemala Antigua",
+        "revenue": 5672.73,
+        "qty_sold": 227
+      },
+      {
+        "sku": "CB-001",
+        "product_name": "Ethiopian Yirgacheffe Single Origin",
+        "revenue": 5374.17,
+        "qty_sold": 283
+      },
+      {
+        "sku": "EQ-002",
+        "product_name": "Stainless Steel French Press (34oz)",
+        "revenue": 5193.55,
+        "qty_sold": 145
+      },
+      {
+        "sku": "AC-004",
+        "product_name": "Precision Coffee Scale with Timer",
+        "revenue": 4948.35,
+        "qty_sold": 165
+      }
+    ],
+    "top_10_by_qty_sold": [
+      {
+        "sku": "CB-001",
+        "product_name": "Ethiopian Yirgacheffe Single Origin",
+        "qty_sold": 283,
+        "revenue": 5374.17
+      },
+      {
+        "sku": "EQ-001",
+        "product_name": "Ceramic Pour-Over Dripper",
+        "qty_sold": 265,
+        "revenue": 6822.35
+      },
+      {
+        "sku": "SUB-002",
+        "product_name": "Quarterly Discovery Box (6 bags + surprise)",
+        "qty_sold": 244,
+        "revenue": 21957.56
+      },
+      {
+        "sku": "SUB-003",
+        "product_name": "Weekly Espresso Club (500g/wk)",
+        "qty_sold": 243,
+        "revenue": 4857.57
+      },
+      {
+        "sku": "SUB-001",
+        "product_name": "Monthly Bean Box (2 bags)",
+        "qty_sold": 242,
+        "revenue": 7983.58
+      },
+      {
+        "sku": "CB-006",
+        "product_name": "Espresso Roast Whole Bean",
+        "qty_sold": 239,
+        "revenue": 4180.11
+      },
+      {
+        "sku": "CB-004",
+        "product_name": "Kenya AA Single Origin",
+        "qty_sold": 231,
+        "revenue": 4617.69
+      },
+      {
+        "sku": "CB-007",
+        "product_name": "Decaf Colombian Swiss Water",
+        "qty_sold": 230,
+        "revenue": 3907.7
+      },
+      {
+        "sku": "CB-008",
+        "product_name": "Limited Edition Guatemala Antigua",
+        "qty_sold": 227,
+        "revenue": 5672.73
+      },
+      {
+        "sku": "CB-005",
+        "product_name": "NovaBrew House Blend (1lb)",
+        "qty_sold": 211,
+        "revenue": 3162.89
+      }
+    ],
+    "revenue_by_category": {
+      "Brewing Equipment": {
+        "revenue": 45384.01,
+        "qty_sold": 1099,
+        "pct_of_total": 32.43
+      },
+      "Subscriptions": {
+        "revenue": 34798.71,
+        "qty_sold": 729,
+        "pct_of_total": 24.87
+      },
+      "Coffee Beans": {
+        "revenue": 33656.44,
+        "qty_sold": 1806,
+        "pct_of_total": 24.05
+      },
+      "Accessories": {
+        "revenue": 26085.37,
+        "qty_sold": 1363,
+        "pct_of_total": 18.64
+      }
+    },
+    "gross_margin_all_products": [
+      {
+        "sku": "SUB-002",
+        "product_name": "Quarterly Discovery Box (6 bags + surprise)",
+        "revenue": 21957.56,
+        "cogs": 7320.0,
+        "gross_profit": 14637.56,
+        "margin_pct": 66.66
+      },
+      {
+        "sku": "EQ-005",
+        "product_name": "Electric Gooseneck Kettle (1.2L)",
+        "revenue": 11618.34,
+        "cogs": 3984.0,
+        "gross_profit": 7634.34,
+        "margin_pct": 65.71
+      },
+      {
+        "sku": "EQ-004",
+        "product_name": "Manual Ceramic Burr Grinder",
+        "revenue": 8633.43,
+        "cogs": 2826.0,
+        "gross_profit": 5807.43,
+        "margin_pct": 67.27
+      },
+      {
+        "sku": "SUB-001",
+        "product_name": "Monthly Bean Box (2 bags)",
+        "revenue": 7983.58,
+        "cogs": 2662.0,
+        "gross_profit": 5321.58,
+        "margin_pct": 66.66
+      },
+      {
+        "sku": "EQ-006",
+        "product_name": "AeroPress Original Kit",
+        "revenue": 8357.91,
+        "cogs": 3344.0,
+        "gross_profit": 5013.91,
+        "margin_pct": 59.99
+      },
+      {
+        "sku": "EQ-001",
+        "product_name": "Ceramic Pour-Over Dripper",
+        "revenue": 6822.35,
+        "cogs": 2915.0,
+        "gross_profit": 3907.35,
+        "margin_pct": 57.27
+      },
+      {
+        "sku": "CB-001",
+        "product_name": "Ethiopian Yirgacheffe Single Origin",
+        "revenue": 5374.17,
+        "cogs": 1754.6,
+        "gross_profit": 3619.57,
+        "margin_pct": 67.35
+      },
+      {
+        "sku": "CB-008",
+        "product_name": "Limited Edition Guatemala Antigua",
+        "revenue": 5672.73,
+        "cogs": 2156.5,
+        "gross_profit": 3516.23,
+        "margin_pct": 61.98
+      },
+      {
+        "sku": "AC-004",
+        "product_name": "Precision Coffee Scale with Timer",
+        "revenue": 4948.35,
+        "cogs": 1650.0,
+        "gross_profit": 3298.35,
+        "margin_pct": 66.66
+      },
+      {
+        "sku": "SUB-003",
+        "product_name": "Weekly Espresso Club (500g/wk)",
+        "revenue": 4857.57,
+        "cogs": 1579.5,
+        "gross_profit": 3278.07,
+        "margin_pct": 67.48
+      },
+      {
+        "sku": "AC-002",
+        "product_name": "Insulated Travel Tumbler (16oz)",
+        "revenue": 4798.08,
+        "cogs": 1536.0,
+        "gross_profit": 3262.08,
+        "margin_pct": 67.99
+      },
+      {
+        "sku": "EQ-002",
+        "product_name": "Stainless Steel French Press (34oz)",
+        "revenue": 5193.55,
+        "cogs": 2102.5,
+        "gross_profit": 3091.05,
+        "margin_pct": 59.52
+      },
+      {
+        "sku": "CB-004",
+        "product_name": "Kenya AA Single Origin",
+        "revenue": 4617.69,
+        "cogs": 1640.1,
+        "gross_profit": 2977.59,
+        "margin_pct": 64.48
+      },
+      {
+        "sku": "AC-005",
+        "product_name": "NovaBrew Canvas Tote Bag",
+        "revenue": 3978.01,
+        "cogs": 1094.5,
+        "gross_profit": 2883.51,
+        "margin_pct": 72.49
+      },
+      {
+        "sku": "EQ-003",
+        "product_name": "Glass Cold Brew Maker (1.5L)",
+        "revenue": 4758.43,
+        "cogs": 1884.0,
+        "gross_profit": 2874.43,
+        "margin_pct": 60.41
+      },
+      {
+        "sku": "CB-006",
+        "product_name": "Espresso Roast Whole Bean",
+        "revenue": 4180.11,
+        "cogs": 1338.4,
+        "gross_profit": 2841.71,
+        "margin_pct": 67.98
+      },
+      {
+        "sku": "AC-007",
+        "product_name": "Coffee Bean Storage Canister",
+        "revenue": 3701.39,
+        "cogs": 1127.0,
+        "gross_profit": 2574.39,
+        "margin_pct": 69.55
+      },
+      {
+        "sku": "CB-007",
+        "product_name": "Decaf Colombian Swiss Water",
+        "revenue": 3907.7,
+        "cogs": 1380.0,
+        "gross_profit": 2527.7,
+        "margin_pct": 64.69
+      },
+      {
+        "sku": "CB-003",
+        "product_name": "Sumatra Mandheling Dark Roast",
+        "revenue": 3598.0,
+        "cogs": 1160.0,
+        "gross_profit": 2438.0,
+        "margin_pct": 67.76
+      },
+      {
+        "sku": "CB-005",
+        "product_name": "NovaBrew House Blend (1lb)",
+        "revenue": 3162.89,
+        "cogs": 886.2,
+        "gross_profit": 2276.69,
+        "margin_pct": 71.98
+      },
+      {
+        "sku": "CB-002",
+        "product_name": "Colombian Supremo Blend",
+        "revenue": 3143.15,
+        "cogs": 1017.5,
+        "gross_profit": 2125.65,
+        "margin_pct": 67.63
+      },
+      {
+        "sku": "AC-008",
+        "product_name": "Latte Art Pitcher (12oz)",
+        "revenue": 2769.37,
+        "cogs": 815.0,
+        "gross_profit": 1954.37,
+        "margin_pct": 70.57
+      },
+      {
+        "sku": "AC-001",
+        "product_name": "NovaBrew Ceramic Mug (12oz)",
+        "revenue": 2218.52,
+        "cogs": 592.0,
+        "gross_profit": 1626.52,
+        "margin_pct": 73.32
+      },
+      {
+        "sku": "AC-003",
+        "product_name": "Reusable Stainless Steel Filter",
+        "revenue": 2143.35,
+        "cogs": 577.5,
+        "gross_profit": 1565.85,
+        "margin_pct": 73.06
+      },
+      {
+        "sku": "AC-006",
+        "product_name": "Bamboo Stir Stick Set (12pk)",
+        "revenue": 1528.3,
+        "cogs": 340.0,
+        "gross_profit": 1188.3,
+        "margin_pct": 77.75
+      }
+    ]
+  },
+  "order_behavior": {
+    "discount_by_code": [
+      {
+        "code": "WELCOME10",
+        "order_count": 81,
+        "total_discount": 1381.59,
+        "avg_discount": 17.06
+      },
+      {
+        "code": "LOYALTY5",
+        "order_count": 75,
+        "total_discount": 635.44,
+        "avg_discount": 8.47
+      },
+      {
+        "code": "NEWBREW20",
+        "order_count": 74,
+        "total_discount": 2402.95,
+        "avg_discount": 32.47
+      },
+      {
+        "code": "COFFEE15",
+        "order_count": 71,
+        "total_discount": 1816.24,
+        "avg_discount": 25.58
+      }
+    ],
+    "revenue_by_payment_method": {
+      "Credit Card": {
+        "revenue": 71423.18,
+        "order_count": 399
+      },
+      "PayPal": {
+        "revenue": 30266.89,
+        "order_count": 175
+      },
+      "Google Pay": {
+        "revenue": 27061.67,
+        "order_count": 143
+      },
+      "Apple Pay": {
+        "revenue": 16115.46,
+        "order_count": 103
+      },
+      "Shop Pay": {
+        "revenue": 14945.23,
+        "order_count": 83
+      }
+    },
+    "revenue_by_source": {
+      "Referral": {
+        "revenue": 35659.79,
+        "order_count": 170
+      },
+      "Instagram Ads": {
+        "revenue": 34530.33,
+        "order_count": 142
+      },
+      "Organic Search": {
+        "revenue": 31927.74,
+        "order_count": 198
+      },
+      "Google Ads": {
+        "revenue": 18356.41,
+        "order_count": 130
+      },
+      "Direct": {
+        "revenue": 12225.75,
+        "order_count": 76
+      },
+      "Email Campaign": {
+        "revenue": 11694.56,
+        "order_count": 77
+      },
+      "TikTok Ads": {
+        "revenue": 9489.48,
+        "order_count": 63
+      },
+      "Facebook Ads": {
+        "revenue": 5928.37,
+        "order_count": 47
+      }
+    }
+  },
+  "geographic": {
+    "top_5_countries": [
+      {
+        "country": "US",
+        "order_count": 457,
+        "revenue": 81016.02
+      },
+      {
+        "country": "IN",
+        "order_count": 193,
+        "revenue": 33171.86
+      },
+      {
+        "country": "GB",
+        "order_count": 113,
+        "revenue": 21399.23
+      },
+      {
+        "country": "CA",
+        "order_count": 48,
+        "revenue": 8045.95
+      },
+      {
+        "country": "DE",
+        "order_count": 31,
+        "revenue": 5293.08
+      }
+    ],
+    "top_5_provinces": [
+      {
+        "province": "California",
+        "order_count": 124,
+        "revenue": 24483.77
+      },
+      {
+        "province": "England",
+        "order_count": 99,
+        "revenue": 17202.0
+      },
+      {
+        "province": "Texas",
+        "order_count": 51,
+        "revenue": 7437.51
+      },
+      {
+        "province": "New York",
+        "order_count": 39,
+        "revenue": 7458.38
+      },
+      {
+        "province": "Berlin",
+        "order_count": 31,
+        "revenue": 5293.08
+      }
+    ]
+  },
+  "structured_insights": [
+    {
+      "id": "insight-001",
+      "headline": "Total revenue of $159,812.43 across 903 orders with AOV $176.98",
+      "category": "revenue",
+      "severity": "high",
+      "metric": "total_revenue",
+      "value": 159812.43,
+      "business_implication": "Baseline performance benchmark across 3-month operating window",
+      "confidence": 1.0
+    },
+    {
+      "id": "insight-002",
+      "headline": "MoM revenue change: +8.9% (Dec\u2192Jan), -21.4% (Jan\u2192Feb)",
+      "category": "revenue_trend",
+      "severity": "high",
+      "metric": "monthly_revenue",
+      "supporting_data": {
+        "2025-12": 54267.45,
+        "2026-01": 59085.63,
+        "2026-02": 46459.35
+      },
+      "business_implication": "Month-over-month growth trajectory indicates demand momentum",
+      "confidence": 1.0
+    },
+    {
+      "id": "insight-003",
+      "headline": "Discount usage at 33.3% \u2014 $6,236.22 total discounts given",
+      "category": "promotions",
+      "severity": "medium",
+      "metric": "discount_usage_rate",
+      "value": 33.33,
+      "business_implication": "One-third of orders use discount codes; review margin impact vs. acquisition value",
+      "confidence": 1.0
+    },
+    {
+      "id": "insight-004",
+      "headline": "75.4% of customers accept marketing \u2014 strong CRM list",
+      "category": "customer",
+      "severity": "medium",
+      "metric": "marketing_opt_in_rate",
+      "value": 75.38,
+      "business_implication": "High opt-in rate enables direct email campaigns to majority of customer base",
+      "confidence": 1.0
+    },
+    {
+      "id": "insight-005",
+      "headline": "Overall gross margin at 65.9% \u2014 total GP $92,242.23",
+      "category": "profitability",
+      "severity": "high",
+      "metric": "gross_margin_pct",
+      "value": 65.92,
+      "business_implication": "Profitability health check \u2014 category and product-level margin varies significantly",
+      "confidence": 1.0
+    }
+  ]
+}
