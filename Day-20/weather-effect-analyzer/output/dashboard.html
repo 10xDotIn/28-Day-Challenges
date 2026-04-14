@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Weather Effect Analyzer — Business Intelligence Dashboard</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { background: #0f0f0f; color: #e0e0e0; font-family: 'Segoe UI', system-ui, sans-serif; padding: 20px; }
+h1 { text-align: center; font-size: 2rem; margin-bottom: 5px; background: linear-gradient(90deg, #00d4ff, #7b2ff7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.subtitle { text-align: center; color: #888; margin-bottom: 30px; font-size: 0.95rem; }
+.hero { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; margin-bottom: 30px; }
+.hero-card { background: linear-gradient(135deg, #1a1a2e, #16213e); border-radius: 12px; padding: 20px; text-align: center; border: 1px solid #333; }
+.hero-card .label { font-size: 0.8rem; color: #888; text-transform: uppercase; letter-spacing: 1px; }
+.hero-card .value { font-size: 1.6rem; font-weight: bold; color: #00d4ff; margin: 8px 0; }
+.section { background: #1a1a2e; border-radius: 12px; padding: 25px; margin-bottom: 25px; border: 1px solid #333; }
+.section h2 { font-size: 1.3rem; margin-bottom: 15px; color: #00d4ff; }
+.section h3 { font-size: 1rem; margin: 15px 0 10px; color: #7b2ff7; }
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 25px; }
+.chart-container { position: relative; width: 100%; max-height: 400px; }
+canvas { max-height: 400px; }
+.heatmap-table { width: 100%; border-collapse: collapse; font-size: 0.75rem; overflow-x: auto; display: block; }
+.heatmap-table th, .heatmap-table td { padding: 8px 6px; text-align: center; border: 1px solid #333; white-space: nowrap; }
+.heatmap-table th { background: #16213e; color: #00d4ff; font-weight: 600; position: sticky; top: 0; }
+.heatmap-table td.biz-name { text-align: left; font-weight: 600; color: #ccc; background: #16213e; position: sticky; left: 0; }
+.insights-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; }
+.insight-card { background: #16213e; border-radius: 10px; padding: 18px; border-left: 4px solid #7b2ff7; }
+.insight-card .title { font-size: 0.8rem; color: #888; text-transform: uppercase; }
+.insight-card .val { font-size: 1.4rem; font-weight: bold; color: #00d4ff; margin: 5px 0; }
+.insight-card .desc { font-size: 0.85rem; color: #aaa; }
+.strategy-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 15px; }
+.strategy-card { background: #16213e; border-radius: 10px; padding: 18px; }
+.strategy-card h4 { margin-bottom: 10px; }
+.strategy-card ul { list-style: none; padding: 0; }
+.strategy-card li { padding: 4px 0; font-size: 0.85rem; color: #bbb; }
+.strategy-card li::before { content: "→ "; color: #00d4ff; }
+.prepare h4 { color: #e74c3c; }
+.capitalize h4 { color: #2ecc71; }
+.hedge h4 { color: #f39c12; }
+.ignore h4 { color: #95a5a6; }
+.rain-table { width: 100%; border-collapse: collapse; }
+.rain-table th, .rain-table td { padding: 10px; text-align: left; border-bottom: 1px solid #333; }
+.rain-table th { color: #00d4ff; font-size: 0.8rem; text-transform: uppercase; }
+.positive { color: #2ecc71; font-weight: bold; }
+.negative { color: #e74c3c; font-weight: bold; }
+@media (max-width: 768px) {
+    .grid-2 { grid-template-columns: 1fr; }
+    .hero { grid-template-columns: repeat(2, 1fr); }
+}
+</style>
+</head>
+<body>
+
+<h1>Weather Effect Analyzer</h1>
+<p class="subtitle">How weather silently controls business revenue — 730 days × 10 businesses decoded</p>
+
+<!-- HERO -->
+<div class="hero">
+    <div class="hero-card"><div class="label">Days Analyzed</div><div class="value">730</div></div>
+    <div class="hero-card"><div class="label">Avg Daily Revenue</div><div class="value">$110,731</div></div>
+    <div class="hero-card"><div class="label">Best Weather</div><div class="value">Thunderstorm</div></div>
+    <div class="hero-card"><div class="label">Worst Weather</div><div class="value">Snow</div></div>
+    <div class="hero-card"><div class="label">Rain Days Impact</div><div class="value">187 days</div></div>
+</div>
+
+<!-- WEATHER REVENUE MAP -->
+<div class="section">
+    <h2>Weather Revenue Map</h2>
+    <div class="chart-container"><canvas id="weatherRevChart"></canvas></div>
+</div>
+
+<!-- WINNERS & LOSERS -->
+<div class="section">
+    <h2>Winners & Losers Matrix</h2>
+    <p style="color:#888;font-size:0.85rem;margin-bottom:10px;">% revenue change from business average. Green = boost, Red = loss.</p>
+    <table class="heatmap-table" id="heatmapTable"></table>
+</div>
+
+<!-- TEMPERATURE CURVE -->
+<div class="section">
+    <h2>Temperature vs Revenue — Top 5 Businesses</h2>
+    <div class="chart-container"><canvas id="tempChart"></canvas></div>
+</div>
+
+<!-- RAIN TAX -->
+<div class="section">
+    <h2>The Rain Tax — Dollar Impact per Rainy Day</h2>
+    <div class="grid-2">
+        <div class="chart-container"><canvas id="rainTaxChart"></canvas></div>
+        <div>
+            <h3>Rain Tax Calculator</h3>
+            <table class="rain-table">
+                <tr><th>Business</th><th>$/Rain Day</th><th>Annual Impact</th></tr>
+                <tr><td>Ride-Hailing</td><td class="positive">$+6,751</td><td class="positive">$+627,833</td></tr><tr><td>E-Commerce</td><td class="positive">$+4,763</td><td class="positive">$+442,970</td></tr><tr><td>Food Delivery</td><td class="positive">$+2,389</td><td class="positive">$+222,174</td></tr><tr><td>Movie Theater</td><td class="positive">$+1,528</td><td class="positive">$+142,117</td></tr><tr><td>Coffee Shop</td><td class="positive">$+532</td><td class="positive">$+49,507</td></tr><tr><td>Gym / Fitness</td><td class="negative">$-486</td><td class="negative">$-45,234</td></tr><tr><td>Ice Cream / Cold Drinks</td><td class="negative">$-871</td><td class="negative">$-81,001</td></tr><tr><td>Restaurant Dine-In</td><td class="negative">$-2,104</td><td class="negative">$-195,633</td></tr><tr><td>Retail Store</td><td class="negative">$-2,451</td><td class="negative">$-227,937</td></tr><tr><td>Outdoor Events</td><td class="negative">$-4,078</td><td class="negative">$-379,215</td></tr>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- SNOW IMPACT -->
+<div class="section">
+    <h2>Snow Impact — Normal Day vs Snow Day</h2>
+    <div class="chart-container"><canvas id="snowChart"></canvas></div>
+</div>
+
+<!-- WEEKEND × WEATHER -->
+<div class="section">
+    <h2>Best & Worst Weather × Day Combos</h2>
+    <div class="chart-container"><canvas id="comboChart"></canvas></div>
+</div>
+
+<!-- SEASONAL PLAYBOOK -->
+<div class="section">
+    <h2>Seasonal Weather Playbook</h2>
+    <table class="heatmap-table" id="seasonTable"></table>
+</div>
+
+<!-- STRATEGY BOARD -->
+<div class="section">
+    <h2>Strategy Board</h2>
+    <div class="strategy-grid">
+        <div class="strategy-card prepare">
+            <h4>🔴 PREPARE</h4>
+            <ul>
+                <li>Staff up delivery teams on forecast rain days (+$2,389/day)</li>
+                <li>Reduce outdoor event staffing on storm days</li>
+                <li>Pre-position e-commerce inventory before storms</li>
+                <li>Weather insurance for outdoor events ($4,078/day at risk)</li>
+            </ul>
+        </div>
+        <div class="strategy-card capitalize">
+            <h4>🟢 CAPITALIZE</h4>
+            <ul>
+                <li>Rain-triggered ads for delivery & ride-hailing</li>
+                <li>Flash sales during storms for e-commerce</li>
+                <li>Rainy-day specials at movie theaters</li>
+                <li>Cold-weather warm drink promotions at coffee shops</li>
+            </ul>
+        </div>
+        <div class="strategy-card hedge">
+            <h4>🟡 HEDGE</h4>
+            <ul>
+                <li>Restaurants: shift to delivery model on rain days</li>
+                <li>Retail: boost online + free shipping in bad weather</li>
+                <li>Outdoor events: indoor backup venues</li>
+                <li>Cross-partner rain-winners with rain-losers</li>
+            </ul>
+        </div>
+        <div class="strategy-card ignore">
+            <h4>⚪ IGNORE</h4>
+            <ul>
+                <li>Cloudy weather — minimal revenue impact</li>
+                <li>Light wind — noise, not signal</li>
+                <li>Fog — affects very few businesses</li>
+                <li>Humidity alone (without heat) — negligible effect</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<!-- KEY INSIGHTS -->
+<div class="section">
+    <h2>Key Insights</h2>
+    <div class="insights-grid">
+        <div class="insight-card"><div class="title">Rain Tax Total</div><div class="val">$929,020</div><div class="desc">Annual revenue lost to rain across all affected businesses</div></div><div class="insight-card"><div class="title">Rain Windfall</div><div class="val">$1,484,602</div><div class="desc">Annual revenue gained by rain-loving businesses</div></div><div class="insight-card"><div class="title">Weather Spread</div><div class="val">$1,693</div><div class="desc">Revenue gap between Thunderstorm and Snow days</div></div><div class="insight-card"><div class="title">Most Sensitive</div><div class="val">Ride-Hailing</div><div class="desc">Revenue swings $3,725 across weather conditions</div></div><div class="insight-card"><div class="title">Biggest Opportunity</div><div class="val">Ride-Hailing</div><div class="desc">Gains $6,751/rain day — $627,833/year untapped</div></div>
+    </div>
+</div>
+
+<script>
+const chartColors = ['#00d4ff','#7b2ff7','#2ecc71','#e74c3c','#f39c12','#3498db','#e91e63','#9b59b6','#1abc9c','#ff6b6b'];
+
+// Weather Revenue Map
+const wrLabels = ["Thunderstorm", "Light Rain", "Heavy Rain", "Hot & Humid", "Clear & Cold", "Sunny", "Cloudy", "Foggy", "Windy", "Snow"];
+const wrValues = [11763.0, 11453.0, 11412.0, 11350.0, 11132.0, 10970.0, 10958.0, 10778.0, 10751.0, 10070.0];
+const wrAvg = 11073.0;
+new Chart(document.getElementById('weatherRevChart'), {
+    type: 'bar',
+    data: {
+        labels: wrLabels,
+        datasets: [{
+            data: wrValues,
+            backgroundColor: wrValues.map(v => v >= wrAvg ? '#2ecc71' : '#e74c3c'),
+            borderRadius: 6
+        }]
+    },
+    options: {
+        indexAxis: 'y',
+        responsive: true,
+        plugins: {
+            legend: { display: false },
+            tooltip: { callbacks: { label: ctx => '$' + ctx.parsed.x.toLocaleString() } }
+        },
+        scales: {
+            x: { grid: { color: '#333' }, ticks: { color: '#aaa', callback: v => '$'+v.toLocaleString() } },
+            y: { grid: { display: false }, ticks: { color: '#ccc' } }
+        }
+    }
+});
+
+// Winners & Losers Heatmap
+const hmBiz = ["Coffee Shop", "E-Commerce", "Food Delivery", "Gym / Fitness", "Ice Cream / Cold Drinks", "Movie Theater", "Outdoor Events", "Restaurant Dine-In", "Retail Store", "Ride-Hailing"];
+const hmConds = ["Clear & Cold", "Cloudy", "Foggy", "Heavy Rain", "Hot & Humid", "Light Rain", "Snow", "Sunny", "Thunderstorm", "Windy"];
+const hmVals = [[-0.3, -5.8, -3.5, 9.7, -13.5, 10.7, 25.5, -9.1, 14.2, -2.5], [-4.1, -6.3, -7.7, 14.2, -4.7, 7.6, 17.6, -6.7, 19.1, -5.8], [-7.3, -7.9, -10.8, 21.1, -5.9, 10.6, 22.2, -8.9, 27.2, -9.9], [4.8, 6.3, 4.8, -12.6, 0.4, -3.8, -26.2, 5.2, -14.7, 10.0], [3.8, 11.1, -3.6, -25.8, 40.9, -18.4, -73.1, 22.5, -28.6, 4.8], [-2.3, -5.2, -7.6, 16.7, 1.7, 11.2, -20.9, -3.4, 23.4, -9.5], [21.5, 19.5, 19.4, -56.2, 31.5, -24.1, -71.0, 22.2, -58.7, 15.3], [9.2, 7.8, 7.7, -21.6, 15.2, -5.2, -42.9, 8.9, -20.3, 3.0], [9.7, 8.3, 6.3, -20.6, 10.9, -5.0, -40.4, 8.0, -18.6, 3.5], [-7.2, -9.2, -10.3, 28.8, -7.5, 14.0, 9.7, -10.2, 32.4, -10.4]];
+const hmTable = document.getElementById('heatmapTable');
+let hmHTML = '<tr><th></th>' + hmConds.map(c => '<th>'+c+'</th>').join('') + '</tr>';
+hmBiz.forEach((biz, i) => {
+    hmHTML += '<tr><td class="biz-name">'+biz+'</td>';
+    hmConds.forEach((c, j) => {
+        const v = hmVals[i][j];
+        const r = v < 0 ? Math.min(255, Math.round(-v * 5)) : 0;
+        const g = v > 0 ? Math.min(255, Math.round(v * 5)) : 0;
+        const bg = `rgba(${r},${g},0,0.4)`;
+        hmHTML += `<td style="background:${bg};color:${Math.abs(v)>10?'#fff':'#ccc'}">${v>0?'+':''}${v.toFixed(1)}%</td>`;
+    });
+    hmHTML += '</tr>';
+});
+hmTable.innerHTML = hmHTML;
+
+// Temperature Curve
+const tempData = {"E-Commerce": {"labels": ["15-20", "20-25", "25-30", "30-35", "35-40", "40-45", "45-50", "50-55", "55-60", "60-65", "65-70", "70-75", "75-80", "80-85", "85-90", "90-95", "95-100"], "values": [30951.0, 32332.0, 31431.0, 29593.0, 28238.0, 28925.0, 26947.0, 27143.0, 27915.0, 28012.0, 28818.0, 27033.0, 28375.0, 28129.0, 29082.0, 28961.0, 29203.0]}, "Ride-Hailing": {"labels": ["15-20", "20-25", "25-30", "30-35", "35-40", "40-45", "45-50", "50-55", "55-60", "60-65", "65-70", "70-75", "75-80", "80-85", "85-90", "90-95", "95-100"], "values": [25499.0, 25449.0, 24550.0, 22529.0, 21344.0, 21825.0, 21136.0, 19992.0, 21169.0, 21620.0, 22228.0, 20269.0, 21725.0, 21406.0, 22974.0, 22250.0, 23190.0]}, "Retail Store": {"labels": ["15-20", "20-25", "25-30", "30-35", "35-40", "40-45", "45-50", "50-55", "55-60", "60-65", "65-70", "70-75", "75-80", "80-85", "85-90", "90-95", "95-100"], "values": [12025.0, 13402.0, 11606.0, 14574.0, 12681.0, 13670.0, 14244.0, 14303.0, 15220.0, 14315.0, 14881.0, 14900.0, 14552.0, 14919.0, 13055.0, 14195.0, 13363.0]}, "Restaurant Dine-In": {"labels": ["15-20", "20-25", "25-30", "30-35", "35-40", "40-45", "45-50", "50-55", "55-60", "60-65", "65-70", "70-75", "75-80", "80-85", "85-90", "90-95", "95-100"], "values": [9308.0, 10216.0, 9062.0, 11338.0, 10183.0, 11031.0, 11281.0, 11356.0, 12293.0, 11570.0, 12245.0, 11930.0, 11851.0, 12016.0, 10968.0, 12145.0, 11543.0]}, "Food Delivery": {"labels": ["15-20", "20-25", "25-30", "30-35", "35-40", "40-45", "45-50", "50-55", "55-60", "60-65", "65-70", "70-75", "75-80", "80-85", "85-90", "90-95", "95-100"], "values": [11829.0, 11880.0, 11695.0, 10607.0, 9632.0, 10191.0, 9217.0, 9127.0, 9490.0, 9602.0, 9917.0, 9386.0, 9496.0, 9612.0, 10553.0, 10449.0, 10565.0]}};
+const tempBizNames = Object.keys(tempData);
+new Chart(document.getElementById('tempChart'), {
+    type: 'line',
+    data: {
+        labels: tempData[tempBizNames[0]].labels,
+        datasets: tempBizNames.map((biz, i) => ({
+            label: biz,
+            data: tempData[biz].values,
+            borderColor: chartColors[i],
+            backgroundColor: 'transparent',
+            tension: 0.3,
+            pointRadius: 3,
+            borderWidth: 2
+        }))
+    },
+    options: {
+        responsive: true,
+        plugins: { legend: { labels: { color: '#ccc', font: { size: 10 } } } },
+        scales: {
+            x: { grid: { color: '#333' }, ticks: { color: '#aaa', maxRotation: 45 } },
+            y: { grid: { color: '#333' }, ticks: { color: '#aaa', callback: v => '$'+v.toLocaleString() } }
+        }
+    }
+});
+
+// Rain Tax Chart
+const rtLabels = ["Ride-Hailing", "E-Commerce", "Food Delivery", "Movie Theater", "Coffee Shop", "Gym / Fitness", "Ice Cream / Cold Drinks", "Restaurant Dine-In", "Retail Store", "Outdoor Events"];
+const rtValues = [6751.0, 4763.0, 2389.0, 1528.0, 532.0, -486.0, -871.0, -2104.0, -2451.0, -4078.0];
+new Chart(document.getElementById('rainTaxChart'), {
+    type: 'bar',
+    data: {
+        labels: rtLabels,
+        datasets: [{
+            data: rtValues,
+            backgroundColor: rtValues.map(v => v >= 0 ? '#2ecc71' : '#e74c3c'),
+            borderRadius: 6
+        }]
+    },
+    options: {
+        indexAxis: 'y',
+        responsive: true,
+        plugins: { legend: { display: false } },
+        scales: {
+            x: { grid: { color: '#333' }, ticks: { color: '#aaa', callback: v => '$'+v.toLocaleString() } },
+            y: { grid: { display: false }, ticks: { color: '#ccc', font: { size: 9 } } }
+        }
+    }
+});
+
+// Snow Impact Chart
+const snowLabels = ["E-Commerce", "Ride-Hailing", "Retail Store", "Restaurant Dine-In", "Food Delivery", "Outdoor Events", "Movie Theater", "Gym / Fitness", "Coffee Shop", "Ice Cream / Cold Drinks"];
+const snowNormal = [28297.0, 21848.0, 14424.0, 11662.0, 9861.0, 7511.0, 7262.0, 4062.0, 3460.0, 2927.0];
+const snowDay = [33617.0, 24091.0, 8404.0, 6499.0, 12203.0, 2093.0, 5675.0, 2954.0, 4408.0, 756.0];
+new Chart(document.getElementById('snowChart'), {
+    type: 'bar',
+    data: {
+        labels: snowLabels,
+        datasets: [
+            { label: 'Normal Day', data: snowNormal, backgroundColor: '#3498db', borderRadius: 4 },
+            { label: 'Snow Day', data: snowDay, backgroundColor: '#e74c3c', borderRadius: 4 }
+        ]
+    },
+    options: {
+        responsive: true,
+        plugins: { legend: { labels: { color: '#ccc' } } },
+        scales: {
+            x: { grid: { display: false }, ticks: { color: '#aaa', maxRotation: 45, font: { size: 9 } } },
+            y: { grid: { color: '#333' }, ticks: { color: '#aaa', callback: v => '$'+v.toLocaleString() } }
+        }
+    }
+});
+
+// Best/Worst Combos
+const comboLabels = ["Saturday \u00d7 Thunderstorm", "Sunday \u00d7 Thunderstorm", "Sunday \u00d7 Light Rain", "Sunday \u00d7 Heavy Rain", "Saturday \u00d7 Hot & Humid", "Tuesday \u00d7 Snow", "Wednesday \u00d7 Snow", "Monday \u00d7 Snow", "Friday \u00d7 Snow", "Thursday \u00d7 Snow"];
+const comboValues = [13440.0, 13357.0, 13299.0, 13231.0, 13040.0, 9444.0, 9725.0, 9752.0, 9820.0, 9842.0];
+new Chart(document.getElementById('comboChart'), {
+    type: 'bar',
+    data: {
+        labels: comboLabels,
+        datasets: [{
+            data: comboValues,
+            backgroundColor: comboValues.map((v,i) => i < 5 ? '#2ecc71' : '#e74c3c'),
+            borderRadius: 6
+        }]
+    },
+    options: {
+        indexAxis: 'y',
+        responsive: true,
+        plugins: { legend: { display: false } },
+        scales: {
+            x: { grid: { color: '#333' }, ticks: { color: '#aaa', callback: v => '$'+v.toLocaleString() } },
+            y: { grid: { display: false }, ticks: { color: '#ccc', font: { size: 9 } } }
+        }
+    }
+});
+
+// Seasonal Heatmap
+const sSeason = ["Spring", "Summer", "Fall", "Winter"];
+const sConds = ["Clear & Cold", "Cloudy", "Foggy", "Heavy Rain", "Hot & Humid", "Light Rain", "Snow", "Sunny", "Thunderstorm", "Windy"];
+const sVals = [[-4.0, 0.7, -5.1, 3.3, 0.3, 4.7, -1.9, -0.0, 4.6, -2.6], [-3.6, -5.2, 5.9, 0.2, 0.5, 8.6, 0, -3.4, 4.1, -7.1], [-0.7, 1.2, -4.9, 1.3, 5.9, 3.9, -12.4, -2.1, 10.2, -2.4], [3.1, -3.2, 2.2, 5.2, 0, -1.1, -10.4, 1.0, 5.2, -2.0]];
+const sTable = document.getElementById('seasonTable');
+let sHTML = '<tr><th></th>' + sConds.map(c => '<th>'+c+'</th>').join('') + '</tr>';
+sSeason.forEach((s, i) => {
+    sHTML += '<tr><td class="biz-name">'+s+'</td>';
+    sConds.forEach((c, j) => {
+        const v = sVals[i][j];
+        const r = v < 0 ? Math.min(255, Math.round(-v * 8)) : 0;
+        const g = v > 0 ? Math.min(255, Math.round(v * 8)) : 0;
+        const bg = `rgba(${r},${g},0,0.4)`;
+        sHTML += `<td style="background:${bg};color:${Math.abs(v)>5?'#fff':'#ccc'}">${v>0?'+':''}${v.toFixed(1)}%</td>`;
+    });
+    sHTML += '</tr>';
+});
+sTable.innerHTML = sHTML;
+</script>
+
+<div style="text-align:center;padding:30px 0 10px;color:#555;font-size:0.8rem;">
+    Weather Effect Analyzer — Business Intelligence Dashboard | Data: 730 days × 10 businesses
+</div>
+</body>
+</html>
