@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Profit Illusion Analyzer</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { background:#0f0f0f; color:#e0e0e0; font-family:'Segoe UI',system-ui,sans-serif; padding:20px; }
+.hero { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:16px; margin-bottom:30px; }
+.hero-card { background:linear-gradient(135deg,#1a1a2e,#16213e); border-radius:12px; padding:20px; text-align:center; border:1px solid #333; }
+.hero-card .label { font-size:12px; color:#888; text-transform:uppercase; letter-spacing:1px; }
+.hero-card .value { font-size:28px; font-weight:700; margin-top:6px; }
+.hero-card .value.green { color:#2ecc71; }
+.hero-card .value.blue { color:#4ea8de; }
+.hero-card .value.red { color:#e74c3c; }
+.hero-card .value.gold { color:#f1c40f; }
+h1 { text-align:center; font-size:32px; margin-bottom:8px; color:#fff; }
+.subtitle { text-align:center; color:#888; margin-bottom:24px; font-size:14px; }
+.card { background:#1a1a2e; border-radius:12px; padding:24px; margin-bottom:24px; border:1px solid #333; }
+.card h2 { color:#fff; margin-bottom:16px; font-size:20px; border-bottom:1px solid #333; padding-bottom:8px; }
+.chart-container { width:100%; overflow-x:auto; }
+canvas { max-width:100%; }
+table { width:100%; border-collapse:collapse; font-size:13px; }
+th { background:#16213e; color:#4ea8de; padding:10px 8px; text-align:left; position:sticky; top:0; }
+td { padding:8px; border-bottom:1px solid #222; }
+tr:hover td { background:#16213e44; }
+.badge { display:inline-block; padding:3px 10px; border-radius:12px; font-size:11px; font-weight:600; }
+.badge-scale { background:#2ecc7133; color:#2ecc71; }
+.badge-fix { background:#f1c40f33; color:#f1c40f; }
+.badge-reprice { background:#e67e2233; color:#e67e22; }
+.badge-drop { background:#e74c3c33; color:#e74c3c; }
+.grid2 { display:grid; grid-template-columns:1fr 1fr; gap:24px; }
+.strat-col { padding:16px; border-radius:10px; }
+.strat-col h3 { margin-bottom:10px; font-size:16px; }
+.strat-col ul { list-style:none; padding:0; }
+.strat-col li { padding:4px 0; font-size:14px; }
+@media(max-width:768px) { .grid2 { grid-template-columns:1fr; } }
+</style>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+</head>
+<body>
+
+<h1>Profit Illusion Analyzer</h1>
+<p class="subtitle">Seeing through revenue vanity — what LOOKS profitable vs what IS profitable</p>
+
+<div class="hero">
+  <div class="hero-card"><div class="label">Total Revenue</div><div class="value blue">$1.1M</div></div>
+  <div class="hero-card"><div class="label">True Profit</div><div class="value green">$354K</div></div>
+  <div class="hero-card"><div class="label">Overall Margin</div><div class="value green">32.8%</div></div>
+  <div class="hero-card"><div class="label">Hidden Costs</div><div class="value red">$726K</div></div>
+  <div class="hero-card"><div class="label">Return Rate</div><div class="value gold">13.5%</div></div>
+</div>
+
+<!-- The Big Lie Chart -->
+<div class="card">
+  <h2>The Big Lie — Revenue vs True Profit by Product</h2>
+  <div class="chart-container"><canvas id="bigLie" height="500"></canvas></div>
+</div>
+
+<!-- Cost Waterfall -->
+<div class="card">
+  <h2>Cost Waterfall — How Revenue Melts Away (Top 5)</h2>
+  <div class="chart-container"><canvas id="waterfall" height="300"></canvas></div>
+</div>
+
+<!-- Revenue Rank vs Profit Rank -->
+<div class="card">
+  <h2>Revenue Rank vs Profit Rank — The Disconnect</h2>
+  <div style="overflow-x:auto;">
+  <table>
+    <tr><th>Product</th><th>Revenue</th><th>Profit</th><th>Margin</th><th>Rev Rank</th><th>Profit Rank</th><th>Gap</th><th>Strategy</th></tr>
+    <tr>
+      <td>Running Shoes</td>
+      <td>$186K</td>
+      <td style="color:#2ecc71">$51K</td>
+      <td>27.2%</td>
+      <td>#1</td>
+      <td>#1</td>
+      <td style="color:#888">0</td>
+      <td><span class="badge badge-fix">FIX</span></td>
+    </tr>
+    <tr>
+      <td>Bluetooth Speaker</td>
+      <td>$132K</td>
+      <td style="color:#2ecc71">$46K</td>
+      <td>35.0%</td>
+      <td>#2</td>
+      <td>#2</td>
+      <td style="color:#888">0</td>
+      <td><span class="badge badge-scale">SCALE</span></td>
+    </tr>
+    <tr>
+      <td>Wireless Earbuds Pro</td>
+      <td>$128K</td>
+      <td style="color:#2ecc71">$35K</td>
+      <td>27.8%</td>
+      <td>#3</td>
+      <td>#3</td>
+      <td style="color:#888">0</td>
+      <td><span class="badge badge-fix">FIX</span></td>
+    </tr>
+    <tr>
+      <td>Fitness Tracker</td>
+      <td>$92K</td>
+      <td style="color:#2ecc71">$24K</td>
+      <td>26.2%</td>
+      <td>#4</td>
+      <td>#6</td>
+      <td style="color:#e74c3c">-2</td>
+      <td><span class="badge badge-scale">SCALE</span></td>
+    </tr>
+    <tr>
+      <td>Hair Dryer</td>
+      <td>$80K</td>
+      <td style="color:#2ecc71">$25K</td>
+      <td>31.3%</td>
+      <td>#5</td>
+      <td>#5</td>
+      <td style="color:#888">0</td>
+      <td><span class="badge badge-scale">SCALE</span></td>
+    </tr>
+    <tr>
+      <td>Denim Jacket</td>
+      <td>$64K</td>
+      <td style="color:#2ecc71">$10K</td>
+      <td>15.7%</td>
+      <td>#6</td>
+      <td>#14</td>
+      <td style="color:#e74c3c">-8</td>
+      <td><span class="badge badge-fix">FIX</span></td>
+    </tr>
+    <tr>
+      <td>Face Serum</td>
+      <td>$44K</td>
+      <td style="color:#2ecc71">$26K</td>
+      <td>58.2%</td>
+      <td>#7</td>
+      <td>#4</td>
+      <td style="color:#2ecc71">+3</td>
+      <td><span class="badge badge-scale">SCALE</span></td>
+    </tr>
+    <tr>
+      <td>Backpack</td>
+      <td>$41K</td>
+      <td style="color:#2ecc71">$18K</td>
+      <td>42.9%</td>
+      <td>#8</td>
+      <td>#8</td>
+      <td style="color:#888">0</td>
+      <td><span class="badge badge-scale">SCALE</span></td>
+    </tr>
+    <tr>
+      <td>Skincare Kit</td>
+      <td>$37K</td>
+      <td style="color:#2ecc71">$19K</td>
+      <td>52.0%</td>
+      <td>#9</td>
+      <td>#7</td>
+      <td style="color:#2ecc71">+2</td>
+      <td><span class="badge badge-scale">SCALE</span></td>
+    </tr>
+    <tr>
+      <td>Smart Water Bottle</td>
+      <td>$36K</td>
+      <td style="color:#2ecc71">$7K</td>
+      <td>19.5%</td>
+      <td>#10</td>
+      <td>#18</td>
+      <td style="color:#e74c3c">-8</td>
+      <td><span class="badge badge-fix">FIX</span></td>
+    </tr>
+    <tr>
+      <td>Protein Powder</td>
+      <td>$36K</td>
+      <td style="color:#2ecc71">$11K</td>
+      <td>30.3%</td>
+      <td>#11</td>
+      <td>#12</td>
+      <td style="color:#e74c3c">-1</td>
+      <td><span class="badge badge-scale">SCALE</span></td>
+    </tr>
+    <tr>
+      <td>Phone Case Premium</td>
+      <td>$33K</td>
+      <td style="color:#2ecc71">$14K</td>
+      <td>43.4%</td>
+      <td>#12</td>
+      <td>#9</td>
+      <td style="color:#2ecc71">+3</td>
+      <td><span class="badge badge-scale">SCALE</span></td>
+    </tr>
+    <tr>
+      <td>USB-C Hub</td>
+      <td>$33K</td>
+      <td style="color:#2ecc71">$10K</td>
+      <td>30.8%</td>
+      <td>#13</td>
+      <td>#13</td>
+      <td style="color:#888">0</td>
+      <td><span class="badge badge-scale">SCALE</span></td>
+    </tr>
+    <tr>
+      <td>Cotton T-Shirt Pack</td>
+      <td>$33K</td>
+      <td style="color:#2ecc71">$12K</td>
+      <td>38.2%</td>
+      <td>#14</td>
+      <td>#10</td>
+      <td style="color:#2ecc71">+4</td>
+      <td><span class="badge badge-scale">SCALE</span></td>
+    </tr>
+    <tr>
+      <td>Laptop Stand</td>
+      <td>$24K</td>
+      <td style="color:#2ecc71">$7K</td>
+      <td>31.2%</td>
+      <td>#15</td>
+      <td>#17</td>
+      <td style="color:#e74c3c">-2</td>
+      <td><span class="badge badge-scale">SCALE</span></td>
+    </tr>
+    <tr>
+      <td>Yoga Mat Premium</td>
+      <td>$20K</td>
+      <td style="color:#2ecc71">$8K</td>
+      <td>40.2%</td>
+      <td>#16</td>
+      <td>#16</td>
+      <td style="color:#888">0</td>
+      <td><span class="badge badge-scale">SCALE</span></td>
+    </tr>
+    <tr>
+      <td>Perfume Set</td>
+      <td>$19K</td>
+      <td style="color:#2ecc71">$11K</td>
+      <td>58.0%</td>
+      <td>#17</td>
+      <td>#11</td>
+      <td style="color:#2ecc71">+6</td>
+      <td><span class="badge badge-scale">SCALE</span></td>
+    </tr>
+    <tr>
+      <td>Sunglasses</td>
+      <td>$19K</td>
+      <td style="color:#2ecc71">$10K</td>
+      <td>51.9%</td>
+      <td>#18</td>
+      <td>#15</td>
+      <td style="color:#2ecc71">+3</td>
+      <td><span class="badge badge-scale">SCALE</span></td>
+    </tr>
+    <tr>
+      <td>Makeup Brush Set</td>
+      <td>$16K</td>
+      <td style="color:#2ecc71">$6K</td>
+      <td>39.8%</td>
+      <td>#19</td>
+      <td>#19</td>
+      <td style="color:#888">0</td>
+      <td><span class="badge badge-scale">SCALE</span></td>
+    </tr>
+    <tr>
+      <td>Resistance Bands Set</td>
+      <td>$8K</td>
+      <td style="color:#2ecc71">$3K</td>
+      <td>30.3%</td>
+      <td>#20</td>
+      <td>#20</td>
+      <td style="color:#888">0</td>
+      <td><span class="badge badge-scale">SCALE</span></td>
+    </tr>
+  </table>
+  </div>
+</div>
+
+<!-- Channel Truth -->
+<div class="card">
+  <h2>Channel Truth — Revenue vs Profit with ROI</h2>
+  <div class="chart-container"><canvas id="channelChart" height="250"></canvas></div>
+</div>
+
+<!-- Segment Profitability -->
+<div class="card">
+  <h2>Customer Segment Profitability</h2>
+  <div class="chart-container"><canvas id="segmentChart" height="250"></canvas></div>
+</div>
+
+<!-- Return Tax -->
+<div class="card">
+  <h2>The Return Tax — Revenue Lost to Returns</h2>
+  <div class="chart-container"><canvas id="returnTax" height="450"></canvas></div>
+</div>
+
+<!-- Discount Trap -->
+<div class="card">
+  <h2>The Discount Trap — Profit Margin by Discount Level</h2>
+  <div class="chart-container"><canvas id="discountChart" height="250"></canvas></div>
+</div>
+
+<!-- Profit Power Ranking -->
+<div class="card">
+  <h2>Profit Power Ranking — True Business Value</h2>
+  <div class="chart-container"><canvas id="powerRanking" height="500"></canvas></div>
+</div>
+
+<!-- Strategy Board -->
+<div class="card">
+  <h2>Strategy Board</h2>
+  <div class="grid2">
+    <div class="strat-col" style="background:#2ecc7115; border:1px solid #2ecc7144;">
+      <h3 style="color:#2ecc71;">SCALE</h3>
+      <ul><li>Backpack</li><li>Bluetooth Speaker</li><li>Cotton T-Shirt Pack</li><li>Face Serum</li><li>Fitness Tracker</li><li>Hair Dryer</li><li>Laptop Stand</li><li>Makeup Brush Set</li><li>Perfume Set</li><li>Phone Case Premium</li><li>Protein Powder</li><li>Resistance Bands Set</li><li>Skincare Kit</li><li>Sunglasses</li><li>USB-C Hub</li><li>Yoga Mat Premium</li></ul>
+    </div>
+    <div class="strat-col" style="background:#f1c40f15; border:1px solid #f1c40f44;">
+      <h3 style="color:#f1c40f;">FIX</h3>
+      <ul><li>Denim Jacket</li><li>Running Shoes</li><li>Smart Water Bottle</li><li>Wireless Earbuds Pro</li></ul>
+    </div>
+    <div class="strat-col" style="background:#e67e2215; border:1px solid #e67e2244;">
+      <h3 style="color:#e67e22;">REPRICE</h3>
+      <ul><li>None</li></ul>
+    </div>
+    <div class="strat-col" style="background:#e74c3c15; border:1px solid #e74c3c44;">
+      <h3 style="color:#e74c3c;">DROP</h3>
+      <ul><li>None</li></ul>
+    </div>
+  </div>
+</div>
+
+<script>
+Chart.defaults.color = '#aaa';
+Chart.defaults.borderColor = '#333';
+const money = v => v >= 1e6 ? '$'+(v/1e6).toFixed(1)+'M' : v >= 1e3 ? '$'+(v/1e3).toFixed(0)+'K' : '$'+v.toFixed(0);
+
+// Big Lie Chart
+new Chart(document.getElementById('bigLie'), {
+  type: 'bar',
+  data: {
+    labels: ["Running Shoes", "Bluetooth Speaker", "Wireless Earbuds Pro", "Fitness Tracker", "Hair Dryer", "Denim Jacket", "Face Serum", "Backpack", "Skincare Kit", "Smart Water Bottle", "Protein Powder", "Phone Case Premium", "USB-C Hub", "Cotton T-Shirt Pack", "Laptop Stand", "Yoga Mat Premium", "Perfume Set", "Sunglasses", "Makeup Brush Set", "Resistance Bands Set"],
+    datasets: [
+      { label:'Revenue', data:[186245.0, 131521.0, 127831.0, 92237.0, 80015.0, 63819.0, 44163.0, 41390.0, 36670.0, 35970.0, 35804.0, 32968.0, 32632.0, 32571.0, 23978.0, 20204.0, 19463.0, 18664.0, 15969.0, 8284.0], backgroundColor:'#4ea8de' },
+      { label:'True Profit', data:[50582.0, 45996.0, 35475.0, 24191.0, 25073.0, 10047.0, 25685.0, 17766.0, 19086.0, 7024.0, 10835.0, 14317.0, 10063.0, 12428.0, 7491.0, 8124.0, 11281.0, 9688.0, 6351.0, 2508.0], backgroundColor:'#2ecc71' }
+    ]
+  },
+  options: {
+    indexAxis:'y', responsive:true,
+    plugins:{ legend:{ labels:{ color:'#fff' } } },
+    scales:{ x:{ ticks:{ callback: v=>money(v) } } }
+  }
+});
+
+// Waterfall
+const wfData = [{"product": "Running Shoes", "revenue": 186245, "cogs": 52910, "shipping": 8474, "returns": 5579, "support": 3303, "marketing": 22708, "profit": 50582}, {"product": "Bluetooth Speaker", "revenue": 131521, "cogs": 38200, "shipping": 8407, "returns": 2367, "support": 3448, "marketing": 15434, "profit": 45996}, {"product": "Wireless Earbuds Pro", "revenue": 127831, "cogs": 33516, "shipping": 10195, "returns": 3867, "support": 5620, "marketing": 15162, "profit": 35475}, {"product": "Fitness Tracker", "revenue": 92237, "cogs": 29700, "shipping": 7422, "returns": 2323, "support": 4096, "marketing": 10752, "profit": 24191}, {"product": "Hair Dryer", "revenue": 80015, "cogs": 24084, "shipping": 4613, "returns": 2026, "support": 2928, "marketing": 8918, "profit": 25073}];
+const wfLabels = wfData.map(d=>d.product);
+const wfCogs = wfData.map(d=>d.cogs);
+const wfShip = wfData.map(d=>d.shipping);
+const wfRet  = wfData.map(d=>d.returns);
+const wfSup  = wfData.map(d=>d.support);
+const wfMkt  = wfData.map(d=>d.marketing);
+const wfProf = wfData.map(d=>d.profit);
+new Chart(document.getElementById('waterfall'), {
+  type:'bar',
+  data: {
+    labels: wfLabels,
+    datasets: [
+      { label:'COGS', data:wfCogs, backgroundColor:'#e74c3c' },
+      { label:'Shipping', data:wfShip, backgroundColor:'#e67e22' },
+      { label:'Returns', data:wfRet, backgroundColor:'#9b59b6' },
+      { label:'Support', data:wfSup, backgroundColor:'#3498db' },
+      { label:'Marketing', data:wfMkt, backgroundColor:'#1abc9c' },
+      { label:'Profit', data:wfProf, backgroundColor:'#2ecc71' },
+    ]
+  },
+  options: {
+    responsive:true, plugins:{ legend:{ labels:{ color:'#fff' } } },
+    scales: { x:{ stacked:true }, y:{ stacked:true, ticks:{ callback:v=>money(v) } } }
+  }
+});
+
+// Channel
+new Chart(document.getElementById('channelChart'), {
+  type:'bar',
+  data: {
+    labels: ["paid_ads", "organic", "social_media", "email", "referral"],
+    datasets: [
+      { label:'Revenue', data:[325619.0, 271249.0, 214647.0, 164916.0, 103969.0], backgroundColor:'#4ea8de' },
+      { label:'Profit', data:[60267.0, 118964.0, 67700.0, 70422.0, 36659.0], backgroundColor:'#2ecc71' }
+    ]
+  },
+  options: {
+    responsive:true,
+    plugins: {
+      legend:{ labels:{ color:'#fff' } },
+      tooltip: { callbacks: { afterLabel: function(ctx) {
+        const roi = [0.71, Infinity, 2.5, 13.6, 4.2];
+        return 'ROI: ' + roi[ctx.dataIndex] + 'x';
+      } } }
+    },
+    scales:{ y:{ ticks:{ callback:v=>money(v) } } }
+  }
+});
+
+// Segments
+new Chart(document.getElementById('segmentChart'), {
+  type:'bar',
+  data: {
+    labels: ["Returning", "New Customer", "One-Time Buyer", "Discount Hunter", "VIP"],
+    datasets: [
+      { label:'Revenue', data:[296054.0, 274528.0, 226646.0, 166992.0, 116179.0], backgroundColor:'#4ea8de' },
+      { label:'Profit', data:[113516.0, 96479.0, 82298.0, 18554.0, 43165.0], backgroundColor:'#2ecc71' }
+    ]
+  },
+  options: {
+    responsive:true,
+    plugins: { legend:{ labels:{ color:'#fff' } } },
+    scales:{ y:{ ticks:{ callback:v=>money(v) } } }
+  }
+});
+
+// Return Tax
+new Chart(document.getElementById('returnTax'), {
+  type:'bar',
+  data: {
+    labels: ["Smart Water Bottle", "Denim Jacket", "Wireless Earbuds Pro", "Running Shoes", "Phone Case Premium", "USB-C Hub", "Makeup Brush Set", "Laptop Stand", "Cotton T-Shirt Pack", "Hair Dryer", "Fitness Tracker", "Sunglasses", "Resistance Bands Set", "Yoga Mat Premium", "Bluetooth Speaker", "Backpack", "Protein Powder", "Skincare Kit", "Face Serum", "Perfume Set"],
+    datasets: [{
+      label:'Return Cost % of Revenue',
+      data:[3.45, 3.3, 3.03, 3.0, 2.8, 2.79, 2.79, 2.77, 2.53, 2.53, 2.52, 2.49, 2.31, 1.81, 1.8, 1.68, 1.57, 1.25, 1.16, 1.01],
+      backgroundColor: [3.45, 3.3, 3.03, 3.0, 2.8, 2.79, 2.79, 2.77, 2.53, 2.53, 2.52, 2.49, 2.31, 1.81, 1.8, 1.68, 1.57, 1.25, 1.16, 1.01].map(v => v > 10 ? '#e74c3c' : v > 5 ? '#e67e22' : '#2ecc71')
+    }]
+  },
+  options: {
+    indexAxis:'y', responsive:true,
+    plugins: { legend:{ labels:{ color:'#fff' } } },
+    scales:{ x:{ ticks:{ callback:v=>v+'%' } } }
+  }
+});
+
+// Discount Trap
+new Chart(document.getElementById('discountChart'), {
+  type:'line',
+  data: {
+    labels: ["0-5%", "5-10%", "10-15%", "15-20%", "20-25%", "25-30%", "30-35%", "35-40%", "40%+"],
+    datasets: [{
+      label:'Profit Margin %',
+      data:[38.74, 36.6, 34.21, 35.53, 17.88, 17.36, 12.84, 1.05, 0.68],
+      borderColor:'#f1c40f',
+      backgroundColor:'#f1c40f33',
+      fill:true, tension:0.3, pointRadius:6
+    }]
+  },
+  options: {
+    responsive:true,
+    plugins: { legend:{ labels:{ color:'#fff' } } },
+    scales:{ y:{ ticks:{ callback:v=>v+'%' } } }
+  }
+});
+
+// Power Ranking
+const stratColors = ["SCALE", "SCALE", "SCALE", "SCALE", "SCALE", "SCALE", "SCALE", "SCALE", "SCALE", "SCALE", "SCALE", "SCALE", "SCALE", "SCALE", "SCALE", "FIX", "SCALE", "FIX", "FIX", "FIX"].map(s =>
+  s==='SCALE' ? '#2ecc71' : s==='FIX' ? '#f1c40f' : s==='REPRICE' ? '#e67e22' : '#e74c3c'
+);
+new Chart(document.getElementById('powerRanking'), {
+  type:'bar',
+  data: {
+    labels: ["Face Serum", "Perfume Set", "Skincare Kit", "Sunglasses", "Backpack", "Phone Case Premium", "Yoga Mat Premium", "Makeup Brush Set", "Cotton T-Shirt Pack", "Bluetooth Speaker", "Protein Powder", "Resistance Bands Set", "Laptop Stand", "USB-C Hub", "Hair Dryer", "Running Shoes", "Fitness Tracker", "Smart Water Bottle", "Wireless Earbuds Pro", "Denim Jacket"],
+    datasets: [{
+      label:'Power Score',
+      data:[0.8579, 0.7867, 0.7431, 0.6954, 0.6533, 0.6497, 0.618, 0.6122, 0.6092, 0.563, 0.5243, 0.5198, 0.4612, 0.4542, 0.4299, 0.4296, 0.3456, 0.3272, 0.3194, 0.2222],
+      backgroundColor: stratColors
+    }]
+  },
+  options: {
+    indexAxis:'y', responsive:true,
+    plugins: { legend:{ labels:{ color:'#fff' } } },
+    scales:{ x:{ min:0, max:1 } }
+  }
+});
+</script>
+
+</body>
+</html>

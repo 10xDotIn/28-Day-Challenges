@@ -1,0 +1,10 @@
+total_customers: 8000
+avg_clv: 1955.03794375
+total_predicted_value: 15640303.55
+churn_rate: 44.1375
+top_10_concentration: 0.45127165278305825
+best_channel: referral
+worst_channel: paid_ads
+strongest_predictor: pages_viewed_first_30d
+strongest_predictor_correlation: 0.4094710678322785
+most_valuable_archetype: Future VIP

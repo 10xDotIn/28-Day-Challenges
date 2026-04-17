@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Intelligence Dashboard</title>
+    <style>
+        body {
+            background-color: #0f0f0f;
+            color: #f9fafb;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+        .header { text-align: center; margin-bottom: 40px; }
+        h1 { color: #6366f1; font-size: 2.5em; margin-bottom: 5px; }
+        .metrics {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+        .metric-card {
+            background-color: #1a1a1a;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            flex: 1;
+            min-width: 200px;
+            border: 1px solid #2d2d2d;
+        }
+        .metric-value { font-size: 2em; font-weight: bold; color: #10b981; }
+        .metric-label { color: #6b7280; font-size: 0.9em; text-transform: uppercase; }
+        .charts {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+        .chart-card {
+            background-color: #1a1a1a;
+            padding: 20px;
+            border-radius: 10px;
+            border: 1px solid #2d2d2d;
+            text-align: center;
+        }
+        .chart-card img { max-width: 100%; height: auto; border-radius: 5px; }
+        .strategy-board {
+            background-color: #1a1a1a;
+            padding: 30px;
+            border-radius: 10px;
+            border: 1px solid #2d2d2d;
+            margin-bottom: 40px;
+        }
+        .strategy-board h2 { color: #6366f1; text-align: center; margin-top: 0; }
+        .strategy-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        .strat-card { padding: 15px; border-radius: 8px; border-left: 4px solid; background-color: #262626; }
+        .strat-invest { border-color: #6366f1; }
+        .strat-nurture { border-color: #3b82f6; }
+        .strat-convert { border-color: #f59e0b; }
+        .strat-letgo { border-color: #ef4444; }
+        .strat-save { border-color: #8b5cf6; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Customer Lifetime Value Predictor</h1>
+        <p>Analyze behaviors, predict lifetime value, and allocate resources efficiently.</p>
+    </div>
+
+    <div class="metrics">
+        <div class="metric-card">
+            <div class="metric-value">8,000</div>
+            <div class="metric-label">Total Customers</div>
+        </div>
+        <div class="metric-card">
+            <div class="metric-value">$15.6M</div>
+            <div class="metric-label">Predicted 3-Year Value</div>
+        </div>
+        <div class="metric-card">
+            <div class="metric-value">$1,955</div>
+            <div class="metric-label">Avg CLV</div>
+        </div>
+        <div class="metric-card">
+            <div class="metric-value" style="color: #ef4444;">44.1%</div>
+            <div class="metric-label">Churn Rate</div>
+        </div>
+        <div class="metric-card">
+            <div class="metric-value">73.4%</div>
+            <div class="metric-label">Value from Top 10%</div>
+        </div>
+    </div>
+
+    <div class="charts">
+        <div class="chart-card">
+            <img src="customer_pyramid.png" alt="Customer Pyramid">
+        </div>
+        <div class="chart-card">
+            <img src="first_purchase_dna.png" alt="First Purchase DNA">
+        </div>
+        <div class="chart-card">
+            <img src="crystal_ball.png" alt="30-Day Crystal Ball">
+        </div>
+        <div class="chart-card">
+            <img src="channel_quality.png" alt="Channel Quality">
+        </div>
+        <div class="chart-card">
+            <img src="discount_curse.png" alt="The Discount Curse">
+        </div>
+        <div class="chart-card">
+            <img src="clv_tiers.png" alt="CLV Tiers">
+        </div>
+    </div>
+
+    <div class="strategy-board">
+        <h2>Strategy Board</h2>
+        <div class="strategy-grid">
+            <div class="strat-card strat-invest">
+                <h3>INVEST</h3>
+                <p><strong>Target:</strong> Future VIPs & Loyal Regulars</p>
+                <p>Increase retention spend. Roll out white-glove onboarding and exclusive perks.</p>
+            </div>
+            <div class="strat-card strat-nurture">
+                <h3>NURTURE</h3>
+                <p><strong>Target:</strong> Promising New</p>
+                <p>Optimize onboarding. Trigger early multi-channel engagement to push them to secondary purchases quickly.</p>
+            </div>
+            <div class="strat-card strat-convert">
+                <h3>CONVERT</h3>
+                <p><strong>Target:</strong> Discount Addicts</p>
+                <p>Gradually reduce discounts. Focus messaging on brand value and exclusivity instead of price.</p>
+            </div>
+            <div class="strat-card strat-letgo">
+                <h3>LET GO</h3>
+                <p><strong>Target:</strong> One-and-Done</p>
+                <p>Stop wasting ad and retention budget. Cap initial acquisition discounts to minimize loss.</p>
+            </div>
+            <div class="strat-card strat-save">
+                <h3>SAVE</h3>
+                <p><strong>Target:</strong> Fading Away</p>
+                <p>Deploy high-impact re-engagement campaigns immediately when days since last order approaches 60.</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
