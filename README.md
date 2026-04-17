@@ -57,15 +57,15 @@ Every day = **1 Live Project**. After the live session, all project files are pu
 | Day 13 | Customer Targeting Efficiency in Bank Marketing Campaigns | Completed |
 | Day 14 | Feature Impact Analytics  | Completed |
 | Day 15 | Pricing Psychology Analyzer | Completed |
-| Day 16 | Coming Soon | Upcoming |
-| Day 17 | Coming Soon | Upcoming |
-| Day 18 | Coming Soon | Upcoming |
-| Day 19 | Coming Soon | Upcoming |
-| Day 20 | Coming Soon | Upcoming |
-| Day 21 | Coming Soon | Upcoming |
-| Day 22 | Coming Soon | Upcoming |
-| Day 23 | Coming Soon | Upcoming |
-| Day 24 | Coming Soon | Upcoming |
+| Day 16 | profit-illusion-analyzer | Completed |
+| Day 17 | clv-predictor | Completed |
+| Day 18 | analysis on basketball datasets | Completed |
+| Day 19 | neighborhood-price-decoder | Completed |
+| Day 20 | weather-effect-analyzer | Completed |
+| Day 21 | fraud-detective | Completed |
+| Day 22 | refund-predictor | Completed |
+| Day 23 | Social Media Impact on Teen Mental Health | Completed |
+| Day 24 | Memory in claude | Completed |
 | Day 25 | Coming Soon | Upcoming |
 | Day 26 | Coming Soon | Upcoming |
 | Day 27 | Coming Soon | Upcoming |
