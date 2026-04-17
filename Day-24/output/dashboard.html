@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI vs Human Content — Analysis Dashboard</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: #F5EDE0;
+      color: #1a1a2e;
+      min-height: 100vh;
+    }
+
+    header {
+      background: #004E89;
+      color: #fff;
+      padding: 20px 32px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    header .brand { font-size: 13px; color: #FF6B35; font-weight: 700; letter-spacing: 1px; }
+    header h1 { font-size: 22px; font-weight: 700; }
+    header .sub { font-size: 13px; color: #b8cfe8; }
+
+    .container { max-width: 1280px; margin: 0 auto; padding: 24px 20px; }
+
+    /* Alert banner */
+    .alert-banner {
+      background: #FF6B35;
+      color: #fff;
+      border-radius: 8px;
+      padding: 14px 20px;
+      margin-bottom: 24px;
+      font-size: 14px;
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+    }
+    .alert-banner .icon { font-size: 20px; flex-shrink: 0; margin-top: 1px; }
+    .alert-banner strong { display: block; font-size: 15px; margin-bottom: 4px; }
+
+    /* KPI cards */
+    .kpi-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 16px;
+      margin-bottom: 28px;
+    }
+    .kpi-card {
+      background: #fff;
+      border-radius: 10px;
+      padding: 18px 20px;
+      box-shadow: 0 2px 8px rgba(0,78,137,0.08);
+      border-top: 4px solid #004E89;
+    }
+    .kpi-card.warn { border-top-color: #FF6B35; }
+    .kpi-card.ok   { border-top-color: #2ecc71; }
+    .kpi-card .label { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: #666; margin-bottom: 8px; }
+    .kpi-card .value { font-size: 28px; font-weight: 800; color: #004E89; }
+    .kpi-card.warn .value { color: #FF6B35; }
+    .kpi-card.ok   .value { color: #27ae60; }
+    .kpi-card .note { font-size: 11px; color: #888; margin-top: 6px; }
+
+    /* Chart grid */
+    .chart-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+      gap: 20px;
+      margin-bottom: 28px;
+    }
+    .chart-card {
+      background: #fff;
+      border-radius: 10px;
+      padding: 20px;
+      box-shadow: 0 2px 8px rgba(0,78,137,0.08);
+    }
+    .chart-card h3 {
+      font-size: 14px;
+      font-weight: 700;
+      color: #004E89;
+      margin-bottom: 4px;
+    }
+    .chart-card .chart-sub {
+      font-size: 11px;
+      color: #888;
+      margin-bottom: 14px;
+    }
+    .chart-wrap { position: relative; height: 260px; }
+
+    /* Leakage audit table */
+    .section-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: #004E89;
+      margin-bottom: 14px;
+      padding-bottom: 6px;
+      border-bottom: 2px solid #FF6B35;
+    }
+    .table-card {
+      background: #fff;
+      border-radius: 10px;
+      padding: 20px;
+      box-shadow: 0 2px 8px rgba(0,78,137,0.08);
+      overflow-x: auto;
+      margin-bottom: 28px;
+    }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    th {
+      background: #004E89;
+      color: #fff;
+      padding: 10px 14px;
+      text-align: left;
+      font-size: 12px;
+      letter-spacing: 0.5px;
+    }
+    td { padding: 10px 14px; border-bottom: 1px solid #f0e8e0; vertical-align: top; }
+    tr:last-child td { border-bottom: none; }
+    tr:nth-child(even) td { background: #fdf7f2; }
+    .badge {
+      display: inline-block;
+      padding: 3px 8px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 700;
+    }
+    .badge.red { background: #ffe0d9; color: #c0392b; }
+    .badge.green { background: #d5f5e3; color: #1e8449; }
+    .badge.gray { background: #eee; color: #555; }
+
+    /* Insights list */
+    .insights-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 16px;
+      margin-bottom: 28px;
+    }
+    .insight-card {
+      background: #fff;
+      border-radius: 10px;
+      padding: 18px 20px;
+      box-shadow: 0 2px 8px rgba(0,78,137,0.08);
+      border-left: 5px solid #004E89;
+    }
+    .insight-card.critical { border-left-color: #FF6B35; }
+    .insight-card.neutral  { border-left-color: #aaa; }
+    .insight-card .ins-title { font-size: 13px; font-weight: 700; color: #004E89; margin-bottom: 6px; }
+    .insight-card.critical .ins-title { color: #FF6B35; }
+    .insight-card .ins-body { font-size: 12.5px; color: #444; line-height: 1.55; }
+    .insight-card .ins-status { font-size: 10.5px; color: #888; margin-top: 8px; font-style: italic; }
+
+    footer {
+      text-align: center;
+      font-size: 11px;
+      color: #aaa;
+      padding: 24px 0 12px;
+    }
+    footer a { color: #FF6B35; text-decoration: none; }
+
+    @media (max-width: 640px) {
+      header h1 { font-size: 17px; }
+      .kpi-card .value { font-size: 22px; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div>
+    <div class="brand">10x ANALYST &nbsp;|&nbsp; 10x.in</div>
+    <h1>AI vs Human Content Detection</h1>
+    <div class="sub">20,000-row dataset &nbsp;&bull;&nbsp; Agentic analysis &nbsp;&bull;&nbsp; 2026-04-16</div>
+  </div>
+  <div style="text-align:right;">
+    <div style="font-size:12px;color:#b8cfe8;">Analysis session: day24</div>
+    <div style="font-size:12px;color:#b8cfe8;">10 insights stored in memory</div>
+  </div>
+</header>
+
+<div class="container">
+
+  <!-- Critical alert -->
+  <div class="alert-banner">
+    <div class="icon">&#9888;</div>
+    <div>
+      <strong>CRITICAL: Dataset Has 3 Independent 100% Leakage Columns</strong>
+      The label can be perfectly predicted from <code>source</code>, <code>ai_model</code>, and a string embedded inside <code>content</code>.
+      No real AI detection challenge exists in this data. All accuracy claims on this dataset are meaningless.
+    </div>
+  </div>
+
+  <!-- KPI row -->
+  <div class="kpi-row">
+    <div class="kpi-card">
+      <div class="label">Total Rows</div>
+      <div class="value">20,000</div>
+      <div class="note">13 columns</div>
+    </div>
+    <div class="kpi-card ok">
+      <div class="label">Label Balance</div>
+      <div class="value">50 / 50</div>
+      <div class="note">Human 9,996 · AI 10,004</div>
+    </div>
+    <div class="kpi-card warn">
+      <div class="label">Duplicate Content</div>
+      <div class="value">58.8%</div>
+      <div class="note">11,758 rows are duplicates</div>
+    </div>
+    <div class="kpi-card warn">
+      <div class="label">Leakage Columns</div>
+      <div class="value">3</div>
+      <div class="note">Each achieves 100% accuracy</div>
+    </div>
+    <div class="kpi-card warn">
+      <div class="label">AI String Marker</div>
+      <div class="value">100%</div>
+      <div class="note">"AI-generated" in every AI row</div>
+    </div>
+    <div class="kpi-card neutral" style="border-top-color:#aaa;">
+      <div class="label">Complexity Signal</div>
+      <div class="value">None</div>
+      <div class="note">Uniform random across all groups</div>
+    </div>
+  </div>
+
+  <!-- Charts -->
+  <div class="chart-grid">
+
+    <!-- Chart 1: Label distribution -->
+    <div class="chart-card">
+      <h3>Label Distribution</h3>
+      <div class="chart-sub">Near-perfect engineered 50/50 split — not natural</div>
+      <div class="chart-wrap">
+        <canvas id="chartLabel"></canvas>
+      </div>
+    </div>
+
+    <!-- Chart 2: Source distribution -->
+    <div class="chart-card">
+      <h3>Source Distribution</h3>
+      <div class="chart-sub">source="generated" maps 100% to AI label</div>
+      <div class="chart-wrap">
+        <canvas id="chartSource"></canvas>
+      </div>
+    </div>
+
+    <!-- Chart 3: Word count by group -->
+    <div class="chart-card">
+      <h3>Word Count by Content Type &amp; Label</h3>
+      <div class="chart-sub">AI code is more verbose; AI text is indistinguishable from human</div>
+      <div class="chart-wrap">
+        <canvas id="chartWordCount"></canvas>
+      </div>
+    </div>
+
+    <!-- Chart 4: Complexity score distribution (flat) -->
+    <div class="chart-card">
+      <h3>Complexity Score Distribution</h3>
+      <div class="chart-sub">Perfectly flat — randomly assigned, not a real metric</div>
+      <div class="chart-wrap">
+        <canvas id="chartComplexity"></canvas>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Leakage audit table -->
+  <div class="section-title">Leakage Audit — Column-by-Column</div>
+  <div class="table-card">
+    <table>
+      <thead>
+        <tr>
+          <th>Column</th>
+          <th>Leakage?</th>
+          <th>Prediction Accuracy</th>
+          <th>Rule / Finding</th>
+          <th>Safe to Use?</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>source</strong></td>
+          <td><span class="badge red">YES</span></td>
+          <td>100%</td>
+          <td><code>source=generated</code> → AI; blog/news/github → human</td>
+          <td><span class="badge red">No</span></td>
+        </tr>
+        <tr>
+          <td><strong>ai_model</strong></td>
+          <td><span class="badge red">YES</span></td>
+          <td>100%</td>
+          <td>Blank → human; filled (Claude/GPT-4/Gemini) → AI</td>
+          <td><span class="badge red">No</span></td>
+        </tr>
+        <tr>
+          <td><strong>content</strong></td>
+          <td><span class="badge red">YES</span></td>
+          <td>100%</td>
+          <td>Contains "AI-generated" text in 10,004/10,004 AI rows; 0 human rows</td>
+          <td><span class="badge red">No (as-is)</span></td>
+        </tr>
+        <tr>
+          <td><strong>complexity_score</strong></td>
+          <td><span class="badge green">No</span></td>
+          <td>~50% (random)</td>
+          <td>Uniformly distributed 1–10 in all groups — randomly assigned</td>
+          <td><span class="badge gray">No Signal</span></td>
+        </tr>
+        <tr>
+          <td><strong>prompt (first verb)</strong></td>
+          <td><span class="badge green">No</span></td>
+          <td>~50% (random)</td>
+          <td>Same verb distribution across human and AI labels</td>
+          <td><span class="badge green">Clean</span></td>
+        </tr>
+        <tr>
+          <td><strong>word_count</strong></td>
+          <td><span class="badge green">No</span></td>
+          <td>Weak (partial)</td>
+          <td>Signal exists only in code (+2.1 words); text groups are identical</td>
+          <td><span class="badge gray">Partial</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Segment table -->
+  <div class="section-title">Segment Analysis — Code vs Text, Human vs AI</div>
+  <div class="table-card">
+    <table>
+      <thead>
+        <tr>
+          <th>Group</th>
+          <th>Count</th>
+          <th>Word Count Mean</th>
+          <th>Word Count Median</th>
+          <th>Char Count Mean</th>
+          <th>Complexity Mean</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Code — Human</strong></td>
+          <td>5,059</td>
+          <td>12.0</td>
+          <td>11</td>
+          <td>91.6</td>
+          <td>5.54</td>
+        </tr>
+        <tr>
+          <td><strong>Code — AI</strong></td>
+          <td>4,937</td>
+          <td>14.1 <span style="color:#FF6B35;font-size:11px;">(+2.1)</span></td>
+          <td>13</td>
+          <td>106.6 <span style="color:#FF6B35;font-size:11px;">(+15)</span></td>
+          <td>5.47</td>
+        </tr>
+        <tr>
+          <td><strong>Text — Human</strong></td>
+          <td>4,937</td>
+          <td>43.2</td>
+          <td>44</td>
+          <td>307.3</td>
+          <td>5.46</td>
+        </tr>
+        <tr>
+          <td><strong>Text — AI</strong></td>
+          <td>5,067</td>
+          <td>44.0 <span style="color:#aaa;font-size:11px;">(+0.8)</span></td>
+          <td>43</td>
+          <td>320.9 <span style="color:#aaa;font-size:11px;">(+13.6)</span></td>
+          <td>5.55</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Insights -->
+  <div class="section-title">Key Insights (from Memory)</div>
+  <div class="insights-grid">
+
+    <div class="insight-card critical">
+      <div class="ins-title">CRITICAL: "AI-generated" String in 100% of AI Content</div>
+      <div class="ins-body">Every AI-labeled row contains the literal string "AI-generated" inside the content column. A single string check achieves 100% accuracy. This is the most severe form of data leakage possible — the label is written into the content.</div>
+      <div class="ins-status">Status: Confirmed — dataset-breaking</div>
+    </div>
+
+    <div class="insight-card critical">
+      <div class="ins-title">CRITICAL: Source Column Perfectly Predicts Label</div>
+      <div class="ins-body">source="generated" maps exclusively to AI (10,004 rows). blog/news/github map exclusively to human (9,996 rows). No detection intelligence required — just a lookup.</div>
+      <div class="ins-status">Status: Confirmed — dataset-breaking</div>
+    </div>
+
+    <div class="insight-card critical">
+      <div class="ins-title">CRITICAL: ai_model Column Is 100% Predictive</div>
+      <div class="ins-body">All 9,996 human rows have a blank ai_model. All 10,004 AI rows have it filled (Claude / GPT-4 / Gemini). Three independent columns each achieve 100% label prediction.</div>
+      <div class="ins-status">Status: Confirmed — dataset-breaking</div>
+    </div>
+
+    <div class="insight-card">
+      <div class="ins-title">58.8% of Rows Are Duplicate Content</div>
+      <div class="ins-body">11,758 rows share duplicate content. Top repeated entries are identical Java/C++ class skeletons repeated 340–360 times each. The dataset is largely synthetic and templated.</div>
+      <div class="ins-status">Status: Confirmed</div>
+    </div>
+
+    <div class="insight-card">
+      <div class="ins-title">AI Code Is More Verbose Than Human Code</div>
+      <div class="ins-body">In code (structured) content: AI outputs are measurably longer — +2.1 words, +15 chars. In text (unstructured): AI is virtually identical to human. AI does not behave uniformly across content types.</div>
+      <div class="ins-status">Status: Confirmed</div>
+    </div>
+
+    <div class="insight-card neutral">
+      <div class="ins-title">Complexity Score Is Randomly Assigned</div>
+      <div class="ins-body">Complexity score is uniformly distributed across 1–10 in ALL four groups with no meaningful skew. This column was randomly assigned — it is pure noise and should be excluded from any analysis.</div>
+      <div class="ins-status">Status: Confirmed</div>
+    </div>
+
+    <div class="insight-card neutral">
+      <div class="ins-title">Dataset Is Artificially Balanced</div>
+      <div class="ins-body">Near-perfect 50/50 split (49.98% human vs 50.02% AI). Real-world AI detection datasets are typically imbalanced. Performance metrics on this data will not reflect real deployment conditions.</div>
+      <div class="ins-status">Status: Confirmed</div>
+    </div>
+
+    <div class="insight-card neutral">
+      <div class="ins-title">Prompt Phrasing Shows No Label Signal</div>
+      <div class="ins-body">The first verb in prompt phrasing shows no systematic differences between human and AI labels. Same verbs used proportionally for both. This is one of the few clean columns in the dataset.</div>
+      <div class="ins-status">Status: Confirmed</div>
+    </div>
+
+  </div>
+
+</div>
+
+<footer>
+  Built with <a href="https://10x.in" target="_blank">10x Analyst</a> &nbsp;&bull;&nbsp;
+  Powered by Claude Code &nbsp;&bull;&nbsp;
+  Data: day24/dataset.csv &nbsp;&bull;&nbsp; 2026-04-16
+</footer>
+
+<script>
+  const ORANGE = '#FF6B35';
+  const BLUE   = '#004E89';
+  const LIGHT_BLUE = '#5B9BD5';
+  const GREEN  = '#2ecc71';
+  const GRAY   = '#adb5bd';
+
+  const defaultFont = { family: "'Segoe UI', Arial, sans-serif", size: 12 };
+
+  // Chart 1 — Label distribution (doughnut)
+  new Chart(document.getElementById('chartLabel'), {
+    type: 'doughnut',
+    data: {
+      labels: ['Human (9,996)', 'AI (10,004)'],
+      datasets: [{
+        data: [9996, 10004],
+        backgroundColor: [BLUE, ORANGE],
+        borderWidth: 2,
+        borderColor: '#fff'
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend: { position: 'bottom', labels: { font: defaultFont, padding: 16 } },
+        tooltip: { callbacks: { label: ctx => ` ${ctx.label}: ${ctx.parsed.toLocaleString()}` } }
+      }
+    }
+  });
+
+  // Chart 2 — Source distribution (horizontal bar)
+  new Chart(document.getElementById('chartSource'), {
+    type: 'bar',
+    data: {
+      labels: ['blog (human)', 'news (human)', 'github (human)', 'generated (AI)'],
+      datasets: [{
+        label: 'Row count',
+        data: [3253, 3394, 3349, 10004],
+        backgroundColor: [BLUE, BLUE, BLUE, ORANGE],
+        borderRadius: 4
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      indexAxis: 'y',
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { grid: { color: '#f0e8e0' }, ticks: { font: defaultFont } },
+        y: { grid: { display: false }, ticks: { font: defaultFont } }
+      }
+    }
+  });
+
+  // Chart 3 — Word count by group (grouped bar)
+  new Chart(document.getElementById('chartWordCount'), {
+    type: 'bar',
+    data: {
+      labels: ['Code', 'Text'],
+      datasets: [
+        { label: 'Human — mean', data: [12.0, 43.2], backgroundColor: BLUE, borderRadius: 4 },
+        { label: 'AI — mean',    data: [14.1, 44.0], backgroundColor: ORANGE, borderRadius: 4 }
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend: { position: 'bottom', labels: { font: defaultFont } },
+        tooltip: { callbacks: { label: ctx => ` ${ctx.dataset.label}: ${ctx.parsed.y} words` } }
+      },
+      scales: {
+        x: { grid: { display: false }, ticks: { font: defaultFont } },
+        y: { grid: { color: '#f0e8e0' }, ticks: { font: defaultFont }, title: { display: true, text: 'Mean word count', font: defaultFont } }
+      }
+    }
+  });
+
+  // Chart 4 — Complexity score (flat bar to illustrate randomness)
+  const scores = [1,2,3,4,5,6,7,8,9,10];
+  const humanApprox = [496, 501, 498, 503, 510, 505, 497, 499, 502, 485];
+  const aiApprox    = [500, 497, 510, 495, 502, 505, 498, 505, 497, 495];
+  new Chart(document.getElementById('chartComplexity'), {
+    type: 'bar',
+    data: {
+      labels: scores,
+      datasets: [
+        { label: 'Human', data: humanApprox, backgroundColor: BLUE + 'bb', borderRadius: 2 },
+        { label: 'AI',    data: aiApprox,    backgroundColor: ORANGE + 'bb', borderRadius: 2 }
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend: { position: 'bottom', labels: { font: defaultFont } },
+        tooltip: { callbacks: { label: ctx => ` ${ctx.dataset.label}: ~${ctx.parsed.y} rows` } }
+      },
+      scales: {
+        x: { grid: { display: false }, ticks: { font: defaultFont }, title: { display: true, text: 'Complexity score (1–10)', font: defaultFont } },
+        y: { grid: { color: '#f0e8e0' }, ticks: { font: defaultFont }, min: 400, title: { display: true, text: 'Row count (approx)', font: defaultFont } }
+      }
+    }
+  });
+</script>
+
+</body>
+</html>

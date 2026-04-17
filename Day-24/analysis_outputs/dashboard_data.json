@@ -1,0 +1,106 @@
+{
+  "kpis": {
+    "total_rows": 20000,
+    "total_columns": 13,
+    "human_rows": 9996,
+    "ai_rows": 10004,
+    "label_balance_pct": { "human": 49.98, "ai": 50.02 },
+    "duplicate_content_rows": 11758,
+    "duplicate_content_pct": 58.79
+  },
+  "category_comparisons": {
+    "label_distribution": {
+      "human": 9996,
+      "ai": 10004
+    },
+    "source_distribution": {
+      "blog": 3253,
+      "news": 3394,
+      "github": 3349,
+      "generated": 10004
+    },
+    "source_label_cross": {
+      "blog_human": 3253,
+      "news_human": 3394,
+      "github_human": 3349,
+      "generated_ai": 10004
+    },
+    "type_label_cross": {
+      "code_human": 5059,
+      "code_ai": 4937,
+      "text_human": 4937,
+      "text_ai": 5067
+    },
+    "ai_model_distribution": {
+      "Claude": 3470,
+      "GPT-4": 3292,
+      "Gemini": 3242
+    }
+  },
+  "distribution_summaries": {
+    "complexity_score": {
+      "human_mean": 5.50,
+      "human_median": 6.0,
+      "ai_mean": 5.51,
+      "ai_median": 6.0
+    },
+    "word_count": {
+      "human_mean": 27.4,
+      "human_median": 16,
+      "ai_mean": 29.2,
+      "ai_median": 26
+    }
+  },
+  "segment_analysis": {
+    "type_label_groups": {
+      "code_human": { "count": 5059, "word_count_mean": 12.0, "word_count_median": 11, "char_count_mean": 91.6, "complexity_mean": 5.54 },
+      "code_ai":    { "count": 4937, "word_count_mean": 14.1, "word_count_median": 13, "char_count_mean": 106.6, "complexity_mean": 5.47 },
+      "text_human": { "count": 4937, "word_count_mean": 43.2, "word_count_median": 44, "char_count_mean": 307.3, "complexity_mean": 5.46 },
+      "text_ai":    { "count": 5067, "word_count_mean": 44.0, "word_count_median": 43, "char_count_mean": 320.9, "complexity_mean": 5.55 }
+    },
+    "word_count_delta": {
+      "code_human_vs_ai": "+2.1 words (AI longer)",
+      "text_human_vs_ai": "+0.8 words (negligible)"
+    },
+    "char_count_delta": {
+      "code_human_vs_ai": "+15.0 chars (AI longer)",
+      "text_human_vs_ai": "+13.6 chars (negligible at this scale)"
+    },
+    "complexity_score_finding": "Uniformly distributed across 1-10 in all groups — randomly assigned, not a real signal"
+  },
+  "leakage_audit": {
+    "source_column": {
+      "leakage": true,
+      "accuracy": "100%",
+      "rule": "source=generated → ai; blog/news/github → human"
+    },
+    "ai_model_column": {
+      "leakage": true,
+      "accuracy": "100%",
+      "rule": "blank → human; filled → ai"
+    },
+    "content_string_marker": {
+      "leakage": true,
+      "accuracy": "100%",
+      "rule": "contains 'AI-generated' → ai (10,004/10,004); never in human (0/9,996)"
+    },
+    "prompt_first_verb": {
+      "leakage": false,
+      "note": "Same verb distribution across both labels — clean column"
+    },
+    "complexity_score": {
+      "leakage": false,
+      "note": "Uniform random — no signal at all"
+    }
+  },
+  "outliers": {
+    "top_duplicated_content": [
+      { "snippet": "public class graph_traversal { public static void main...", "count": 359 },
+      { "snippet": "public class sorting_algorithm { public static void main...", "count": 358 },
+      { "snippet": "public class dynamic_programming { public static void main...", "count": 350 },
+      { "snippet": "public class sorting_algorithm (variant)...", "count": 343 },
+      { "snippet": "public class string_manipulation { public static void main...", "count": 342 }
+    ]
+  },
+  "trends": {}
+}
